@@ -26,13 +26,16 @@ public class WebcamTestOpMode  extends OpMode {
         AprilTagDetection id24 = aprilTagWebcam.getTagBySpecificId(24);
         aprilTagWebcam.displayDetectionTelemetry(id24);
 
-        if (gamepad1.y) {
+        if (gamepad1.yWasPressed()) {
             launcher.incrementLaunchSpeed();
         }
-        else if (gamepad1.b) {
+        else if (gamepad1.bWasPressed()) {
             launcher.decrementLaunchSpeed();
         }
-        telemetry.addLine("Motor Velocity: " + launcher.LaunchSpeed);
+        telemetry.addLine("Target Velocity: " + launcher.LaunchSpeed);
+        telemetry.addLine("Lower Velocity: " + launcher.getLowerVelocity());
+        telemetry.addLine("Upper Velocity: " + launcher.getUpperVelocity());
+
 
         launcher.setMotorVelocity();
 

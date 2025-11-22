@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.mechanisms;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -20,16 +21,16 @@ public class MecanumDrive {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the Driver Hub.
-        frontLeftDrive = hwMap.get(DcMotor.class, "front_left_drive");
-        backLeftDrive = hwMap.get(DcMotor.class, "back_left_drive");
-        frontRightDrive = hwMap.get(DcMotor.class, "front_right_drive");
-        backRightDrive = hwMap.get(DcMotor.class, "back_right_drive");
+        frontLeftDrive = hwMap.get(DcMotor.class, "left_front");
+        backLeftDrive = hwMap.get(DcMotor.class, "left_back");
+        frontRightDrive = hwMap.get(DcMotor.class, "right_front");
+        backRightDrive = hwMap.get(DcMotor.class, "right_back");
 
         // Set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         // This uses RUN_WITHOUT_ENCODER because we are using the dead wheels.

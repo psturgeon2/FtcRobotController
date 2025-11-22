@@ -60,19 +60,20 @@ public class Launcher {
         launchFeeder = hwMap.get(Servo.class,"launch_feeder");
 
         // Set launcher motor to RUN_USING_ENCODER and BRAKE to slow down faster than coasting.
-        // upperLaunch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // lowerLaunch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //upperLaunch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //lowerLaunch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         upperLaunch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lowerLaunch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         upperLaunch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lowerLaunch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //lowerLaunch.setDirection(DcMotor.Direction.REVERSE);
 
         /* add these lines when encoders have been attached to the launch motors
         upperLaunch.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
                 300, 0, 0, 10));
         lowerLaunch.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
                 300, 0, 0, 10));
-        */
+*/
 
         // Set left feeder servo to reverse so both servos work to feed ball into robot.
         launchFeeder.setDirection(Servo.Direction.REVERSE);
@@ -96,12 +97,13 @@ public class Launcher {
     }
 
     public void setMotorVelocity(){
-        upperLaunch.setVelocity(LaunchSpeed);
         lowerLaunch.setVelocity(LaunchSpeed);
+        upperLaunch.setVelocity(LaunchSpeed);
+
     }
 
     public void updateState () {
-        switch (launchState) {
+       /* switch (launchState) {
             case IDLE:
                 break;
             case SPIN_UP:
@@ -125,7 +127,7 @@ public class Launcher {
                     launchState = LaunchState.IDLE;
                 }
                 break;
-        }
+        }*/
     }
 
     public void startLauncher(){
@@ -136,10 +138,10 @@ public class Launcher {
     }
 
     public void stopLauncher () {
-        stopFeeder();
+       /* stopFeeder();
         upperLaunch.setVelocity(STOP_SPEED);
         lowerLaunch.setVelocity(STOP_SPEED);
-        launchState = LaunchState.IDLE;
+        launchState = LaunchState.IDLE;*/
     }
 
     public String getState() {
