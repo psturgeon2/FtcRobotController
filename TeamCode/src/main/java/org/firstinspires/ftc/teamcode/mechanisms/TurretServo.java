@@ -18,13 +18,13 @@ public class TurretServo {
         resetTurret(); // default it to "0" degrees
     }
 
-    /// Set launch feeder server back to "0" position
+    /// Set turret server back to "0" position
     public void resetTurret() {
         // Set feeders to a preset value to stop the servos.
         turretServo.setPosition(TURRET_START_POSITION);
     }
 
-    /// Adjust launch feeder server to new position
+    /// Adjust turret server to new position
     public void changeTurretByDegrees(double deltaDegrees) {
 
         // TODO: change currentTurretAngle (range: 0 - 1.0) based on input delta angle as measured by the camera (range: -180 - 180)
