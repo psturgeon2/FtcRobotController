@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Launcher;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
 
@@ -11,12 +12,13 @@ public class RobotTeleOp extends OpMode {
 //This is a change
     MecanumDrive drive = new MecanumDrive();
     Launcher launcher = new Launcher();
+    Intake intake = new Intake();
 
     @Override
     public void init() {
         drive.init(hardwareMap);
         launcher.init(hardwareMap);
-
+        intake.init(hardwareMap);
     }
 
     @Override
@@ -28,11 +30,18 @@ public class RobotTeleOp extends OpMode {
 
         // The user has control of the speed of launcher motor without automatically
         // queuing a shot.
-        if (gamepad1.y) {
+        if (gamepad1.yWasPressed()) {
             launcher.startLauncher();
         }
-        else if (gamepad1.b) {
+        else if (gamepad1.bWasPressed()) {
             launcher.stopLauncher();
+        }
+
+        //For Intake (test if same buttons works)
+        if (gamepad2.aWasPressed()) {
+            intake.startIntake();
+        } else if (gamepad2.xWasPressed()) {
+            intake.stopIntake();
         }
 
         // update launcher state machine

@@ -16,10 +16,11 @@ public class Intake {
     public void init (@NonNull HardwareMap hwMap) {
         Intake = hwMap.get(DcMotor.class, "intake");
 
-        // Set launcher motor to RUN_USING_ENCODER and BRAKE to slow down faster than coasting.
-        Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // INTAKE does not need to run with encoder
+        Intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // start with INTAKE stopped
         stopIntake();
     }
 
