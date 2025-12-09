@@ -20,6 +20,7 @@ public class Launcher {
 
     private DcMotorEx lowerLaunch, upperLaunch;
     private Servo launchFeeder;
+    public double TESTVELOCITY = 500;
 
     //private int _launchSpeed = 0; // Commanded launch motor velocity
 
