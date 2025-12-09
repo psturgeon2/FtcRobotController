@@ -275,4 +275,38 @@ public class Launcher {
         return lowerLaunch.getVelocity();
     }*/
 
+    public void shooterTesterConTwo() throws InterruptedException {
+        if (op.gamepad2.dpadUpWasPressed()){
+            TESTVELOCITY += LARGE_INCREMENT;
+        } else if (op.gamepad2.dpadDownWasPressed()){
+            TESTVELOCITY -= LARGE_INCREMENT;
+        } else if (op.gamepad2.dpadLeftWasPressed()){
+            TESTVELOCITY -= SMALL_INCREMENT;
+        } else if (op.gamepad2.dpadRightWasPressed()){
+            TESTVELOCITY += SMALL_INCREMENT;
+        } else if (op.gamepad2.right_bumper){
+            upperLaunch.setVelocity(TESTVELOCITY);
+            lowerLaunch.setVelocity(TESTVELOCITY);
+        } else if (op.gamepad2.left_bumper) {
+            upperLaunch.setVelocity(-TESTVELOCITY);
+            lowerLaunch.setVelocity(-TESTVELOCITY);
+        }else {
+            upperLaunch.setVelocity(0);
+            lowerLaunch.setVelocity(0);
+        }
+
+        op.telemetry.addLine("Spin Power Left: " + lowerLaunch.getVelocity() + " \nSpin Power Right: " + upperLaunch.getVelocity() + "\nWhat Power Should be: " + TESTVELOCITY);
+    }
+
+    public void testMotor(){
+        if (op.gamepad2.y){
+            upperLaunch.setVelocity(500);
+        } else if (op.gamepad2.b){
+            lowerLaunch.setVelocity(500);
+        } else {
+            upperLaunch.setVelocity(0);
+            lowerLaunch.setVelocity(0);
+        }
+    }
+
 }
