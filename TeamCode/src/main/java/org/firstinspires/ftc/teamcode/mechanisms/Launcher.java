@@ -14,6 +14,9 @@ public class Launcher {
     private final int FEED_TIME_MILLISECONDS = 500; //The feeder servo runs this long when a shot is requested.
     private final double FEED_START_POSITION = 0.0; // nominally 0 degrees, may need to be tuned based on mounting angle of servo
     private final double FEED_POSITION = 0.55; // nominally 90 degrees, may need to increase it slightly
+        public double SMALL_INCREMENT = 50;
+        public double LARGE_INCREMENT = 100;
+        OpMode op;
 
     private DcMotorEx lowerLaunch, upperLaunch;
     private Servo launchFeeder;
