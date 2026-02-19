@@ -1,6 +1,6 @@
 //This code assumes a battery voltage output of 13V
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.oldOpModes;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -18,7 +18,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Autonomous
 @Disabled
-public class RedAutoClose extends OpMode {
+public class RedAutoCloseMotorDrive extends OpMode {
     MecanumDrive drive = new MecanumDrive();
     Intake intake = new Intake();
     Launcher launcher = new Launcher();

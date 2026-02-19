@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.oldOpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -15,7 +15,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Autonomous
 @Disabled
-public class RedAutoLong extends OpMode {
+public class RedAutoLongMotorDrive extends OpMode {
     MecanumDrive drive = new MecanumDrive();
     Intake intake = new Intake();
     Launcher launcher = new Launcher();
@@ -150,7 +150,7 @@ public class RedAutoLong extends OpMode {
                 else {
                     drive.drive(0,0,0);
                     driveTimer.reset();
-                    state = RedAutoLong.State.HOLD_FORWARD_1_8;
+                    state = RedAutoLongMotorDrive.State.HOLD_FORWARD_1_8;
                                     }
                 break;
 
@@ -257,7 +257,7 @@ public class RedAutoLong extends OpMode {
                 }
                 else {
                     drive.drive(0,0,0);
-                    state = RedAutoLong.State.HOLD_FORWARD_2_7;
+                    state = RedAutoLongMotorDrive.State.HOLD_FORWARD_2_7;
                     driveTimer.reset();
                 }
                 break;
