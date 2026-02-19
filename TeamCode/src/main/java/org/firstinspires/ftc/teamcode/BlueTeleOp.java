@@ -36,45 +36,59 @@ public class BlueTeleOp  extends OpMode {
 
     @Override
     public void loop() {
-        //Update the vision portal
-        aprilTagWebcam.update();
-        AprilTagDetection id20 = aprilTagWebcam.getTagBySpecificId(20); // TAG ID 20 is the blue goal
-        aprilTagWebcam.displayDetectionTelemetry(id20);
-        // NOTE: we will need a separate OPMODE (otherwise identical) that sets the target TAGID to BLUE (#20)
-        if (id20 != null && id20.ftcPose != null) {
-            numMissingTagReads = 0;
-            double angleToTag = id20.ftcPose.bearing;
-            turret.changeTurretByDegrees(angleToTag);
 
-            double distanceToGoalCM = id20.ftcPose.range;
-            launcher.setMotorVelocityForDistance(distanceToGoalCM);
-        } else if (numMissingTagReads < 100){
-            numMissingTagReads++;
-        } else {
-            // if we can't see the target
-            // default back to neutral/default
-            // and turn launch motors off
-            launcher.stopLauncher();
-            turret.resetTurret();
-        }
+        if (!gamepad2.b && !gamepad2.right_bumper && !gamepad2.left_bumper) {
+            //Update the vision portal
+            aprilTagWebcam.update();
+            AprilTagDetection id20 = aprilTagWebcam.getTagBySpecificId(20); // TAG ID 24 is the red goal
+            aprilTagWebcam.displayDetectionTelemetry(id20);
+            // NOTE: we will need a separate OPMODE (otherwise identical) that sets the target TAGID to BLUE (#20)
+            if (id20 != null && id20.ftcPose != null) {
+                numMissingTagReads = 0;
+                double angleToTag = id20.ftcPose.bearing;
+                turret.changeTurretByDegrees(angleToTag);
 
-        if(numMissingTagReads >= 100){
-            led.setLEDRed();
-        } else if (id20 != null && id20.ftcPose != null){
-            double speedError = launcher.getLaunchSpeedError();
-            double angleError = turret.getAngleError();
-            if (speedError < 50 && angleError < 2){
-                led.setLEDGreen();
+                double distanceToGoalCM = id20.ftcPose.range;
+                launcher.setMotorVelocityForDistance(distanceToGoalCM);
+                // NOTE: use this after distance vs speed has been measured and calibrated
+            } else if (numMissingTagReads < 100) {
+                numMissingTagReads++;
             } else {
-                led.setLEDBlue();
+                // if we can't see the target
+                // default back to neutral/default
+                // and turn launch motors off
+                launcher.stopLauncher();
+                turret.resetTurret();
             }
+
+            if (numMissingTagReads >= 100) {
+                led.setLEDRed();
+            } else if (id20 != null && id20.ftcPose != null) {
+                double speedError = launcher.getLaunchSpeedError();
+                double angleError = turret.getAngleError();
+                if (speedError < 50 && angleError < 2) {
+                    led.setLEDGreen();
+                } else {
+                    led.setLEDBlue();
+                }
+            }
+            // set LED to yellow? Or something else to indicate we don't have 100 missed reads, but aren't facing the tag now
+            // if we turn quick enough, no guarantee that we will get an angle error...
+            // maybe just > 10 missedTagReads? that would indicate that the tag reads are sketchy even if facing it
+            else if (numMissingTagReads > 10) { // || angleError > 5
+                led.setLEDRed();
+            }
+        } else if (gamepad2.right_bumper) {
+            launcher.presetMotorVelocity(1000);
+            telemetry.addLine("Preset 1000");
+        } else if (gamepad2.left_bumper) {
+            launcher.presetMotorVelocity(1400);
+            telemetry.addLine("preset 1400");
+        } else if (gamepad2.b) {
+            telemetry.addLine("skip april tag");
+            //This skips the april tag reading and math
         }
-        // set LED to yellow? Or something else to indicate we don't have 100 missed reads, but aren't facing the tag now
-        // if we turn quick enough, no guarantee that we will get an angle error...
-        // maybe just > 10 missedTagReads? that would indicate that the tag reads are sketchy even if facing it
-        else if(numMissingTagReads > 10) { // || angleError > 5
-            led.setLEDRed();
-        }
+
 
         // these are manual test methods to assist with tuning the target launch motor velocity at measured distances
         if (gamepad2.leftStickButtonWasPressed()) {
@@ -84,16 +98,19 @@ public class BlueTeleOp  extends OpMode {
         }
         //  launcher.setMotorVelocity();
 
-
-        if (gamepad2.a) {
+// Added a way for Game Controller 1 to do everything for testing
+        if (gamepad2.right_stick_y == 1 || gamepad1.a) {
             //     if (!launcher.getTriggerActive()) {
             // TODO: maybe also check to see that launcher measured velocities are within 10%(?) of target velocity
             //         launcher.triggerFeeder();
             launcher.loadBall();
 
+        } else if (gamepad2.x) {
+            launcher.unloadBall();
         } else {
             launcher.resetFeeder();
         }
+
 
         if (gamepad2.leftStickButtonWasPressed()) {
             launcher.startLauncher();
@@ -115,9 +132,9 @@ public class BlueTeleOp  extends OpMode {
         }
 
         //For Intake (test if same buttons works)
-        if (gamepad1.right_trigger !=0 ) {
+        if (gamepad1.right_trigger != 0 || gamepad2.right_stick_y == 1.0) {
             intake.startIntake();
-        } else if (gamepad1.left_trigger !=0) {
+        } else if (gamepad1.left_trigger != 0) {
             intake.reverseIntake();
         } else {
             intake.stopIntake();
