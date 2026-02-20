@@ -42,10 +42,15 @@ public class WebcamTestOpMode  extends OpMode {
 
         follower = Constants.createFollower(hardwareMap);
 
-        telemetry.addLine("STARTING AT: " + SharedStorage.sharedPose.getX() + ", " + SharedStorage.sharedPose.getY() + ", " + SharedStorage.sharedPose.getHeading());
-        telemetry.addLine("Test Stored X: " + SharedStorage.testX);
-        follower.setStartingPose(SharedStorage.sharedPose);
-        follower.setMaxPower(1);
+        Object autoEndPose = blackboard.get("EndAutoPose");
+
+        if(autoEndPose instanceof Pose) {
+            Pose teleStartPose = (Pose)autoEndPose;
+            telemetry.addLine("STARTING AT: " + teleStartPose.getX() + ", " + teleStartPose.getY() + ", " + teleStartPose.getHeading());
+            //telemetry.addLine("Test Stored X: " + SharedStorage.GetTestX());
+            follower.setStartingPose(teleStartPose);
+            follower.setMaxPower(1);
+        }
     }
 
     @Override
