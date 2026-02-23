@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Autonomous
-public class RedCloseNineBall extends OpMode {
+public class RedCloseTwelveBall extends OpMode {
     MecanumDrive drive = new MecanumDrive();
     Intake intake = new Intake();
     Launcher launcher = new Launcher();
@@ -32,15 +32,17 @@ public class RedCloseNineBall extends OpMode {
 //Test this later to make sure that it shifts the auto a little left (Start position X was 124)
     private final Pose startPose = new Pose(130, 122, Math.toRadians(36)); // Start Pose of our robot.
     private final Pose launchingPose = new Pose(92, 92, Math.toRadians(45)); // Where our robot launches from
-    private final Pose pickupReady1Pose = new Pose(98, 84, Math.toRadians(0)); // Ready to pick up closest row of balls
-    private final Pose pickup1Pose = new Pose(125, 84, Math.toRadians(0)); // Pick up closest row of balls
-    private final Pose pickupReady2Pose = new Pose(98, 60, Math.toRadians(0)); //Ready to pick up middle row of balls
-    private final Pose pickup2Pose = new Pose(125, 60, Math.toRadians(0)); //Pick up middle row of balls
+    private final Pose pickupReady1Pose = new Pose(98, 60, Math.toRadians(0)); // Ready to pick up middle row of balls
+    private final Pose pickup1Pose = new Pose(125, 60, Math.toRadians(0)); // Pick up middle row of balls
+    private final Pose openGateReadyPose = new Pose(123, 66, Math.toRadians(0)); // Ready to open gate
+    private final Pose openGatePose = new Pose(128, 66, Math.toRadians(0)); // Open gate
+    private final Pose pickupReady2Pose = new Pose(98, 84, Math.toRadians(0)); //Ready to pick up closest row of balls
+    private final Pose pickup2Pose = new Pose(125, 84, Math.toRadians(0)); //Pick up middle closest of balls
     private final Pose pickupReady3 = new Pose(98, 38.5, Math.toRadians(0)); //Ready to pick up far balls
     private final Pose endPose = new Pose(125, 38.5, Math.toRadians(0)); //Finish with 3 balls
 
     private Path startToLaunching;
-    private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching2, launchingToPickupReady3, pickupReady3ToFinish, finishToLaunching3;
+    private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToOpenGateReady, openGateReadyToOpenGate, openGateToPickupReady1, pickupReady1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching2, launchingToPickupReady3, pickupReady3ToFinish, finishToLaunching3;
 
     public void buildPaths() {
 
@@ -59,10 +61,25 @@ public class RedCloseNineBall extends OpMode {
                 .setLinearHeadingInterpolation(pickupReady1Pose.getHeading(), pickup1Pose.getHeading())
                 .build();
 
-        pickup1ToLaunching = follower.pathBuilder()
-                .addPath(new BezierLine(pickup1Pose, launchingPose))
-                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), launchingPose.getHeading())
+        pickup1ToOpenGateReady = follower.pathBuilder()
+                .addPath(new BezierLine(pickup1Pose, openGateReadyPose))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), openGateReadyPose.getHeading())
                 .build();
+
+        openGateReadyToOpenGate = follower.pathBuilder()
+                .addPath(new BezierLine(openGateReadyPose, openGatePose))
+                .setLinearHeadingInterpolation(openGateReadyPose.getHeading(), openGatePose.getHeading())
+                .build();
+
+        openGateToPickupReady1 = follower.pathBuilder()
+                .addPath(new BezierLine(openGatePose, pickupReady1Pose))
+                .setLinearHeadingInterpolation(openGatePose.getHeading(), pickup1Pose.getHeading())
+                .build();
+
+        pickupReady1ToLaunching= follower.pathBuilder()
+        .addPath(new BezierLine(pickupReady1Pose, launchingPose))
+        .setLinearHeadingInterpolation(pickupReady1Pose.getHeading(), launchingPose.getHeading())
+        .build();
 
         launchingToPickupReady2 = follower.pathBuilder()
                 .addPath(new BezierLine(launchingPose, pickupReady2Pose))
@@ -103,6 +120,9 @@ public class RedCloseNineBall extends OpMode {
         LAUNCHING_1,
         PREPARE_TO_INTAKE_POSE_1,
         INTAKE_1,
+        INTAKE_TO_OPEN_GATE_READY_1,
+        OPEN_GATE_1,
+        OPEN_GATE_TO_PICKUP_READY_1,
         GO_TO_LAUNCH_2,
         WAIT_TO_FINISH_PATH_2,
         FIND_TAG_2,
@@ -234,7 +254,7 @@ public class RedCloseNineBall extends OpMode {
                 break;
             case PREPARE_TO_INTAKE_POSE_1:
                 if(!follower.isBusy()){
-                    follower.followPath(launchingToPickupReady1, true);
+                    follower.followPath(launchingToPickupReady1, false);
                     state = State.INTAKE_1;
                 }
                 break;
@@ -242,6 +262,25 @@ public class RedCloseNineBall extends OpMode {
                 if(!follower.isBusy()){
                     follower.followPath(pickupReady1ToPickup1, .4, false);
                     intake.startIntake();
+                    state = State.INTAKE_TO_OPEN_GATE_READY_1;
+                }
+                break;
+            case INTAKE_TO_OPEN_GATE_READY_1:
+                if(!follower.isBusy()){
+                    follower.followPath(pickup1ToOpenGateReady, false);
+                    intake.stopIntake();
+                    state = State.OPEN_GATE_1;
+                }
+                break;
+            case OPEN_GATE_1:
+                if(!follower.isBusy()){
+                    follower.followPath(openGateReadyToOpenGate, false);
+                    state = State.OPEN_GATE_TO_PICKUP_READY_1;
+                }
+                break;
+            case OPEN_GATE_TO_PICKUP_READY_1:
+                if(!follower.isBusy()){
+                    follower.followPath(openGateToPickupReady1, false);
                     state = State.GO_TO_LAUNCH_2;
                 }
                 break;
@@ -252,8 +291,7 @@ public class RedCloseNineBall extends OpMode {
 
                     //START SPINNING UP BOTH MOTORS HERE TO IDEAL LAUNCH VELOCITY FROM SHOOTING POSITION
 
-                    follower.followPath(pickup1ToLaunching);
-                    intake.stopIntake();
+                    follower.followPath(pickupReady1ToLaunching);
                     state = State.WAIT_TO_FINISH_PATH_2;
                 }
                 break;
