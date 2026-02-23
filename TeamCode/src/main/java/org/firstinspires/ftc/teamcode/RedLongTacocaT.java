@@ -405,7 +405,7 @@ public class RedLongTacocaT extends OpMode {
         if (id24 != null && id24.ftcPose != null) {
             numMissingTagReads = 0;
             double angleToTag = id24.ftcPose.bearing;
-            //turret.changeTurretByDegrees(angleToTag);
+            turret.changeTurretByDegrees(angleToTag);
 
             double distanceToGoalCM = id24.ftcPose.range;
             launcher.setMotorVelocityForDistance(distanceToGoalCM);
