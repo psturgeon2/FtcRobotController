@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Autonomous
-public class BlueCloseNineBall extends OpMode {
+public class BlueCloseTwelveBall extends OpMode {
     MecanumDrive drive = new MecanumDrive();
     Intake intake = new Intake();
     Launcher launcher = new Launcher();
@@ -32,15 +32,17 @@ public class BlueCloseNineBall extends OpMode {
 
     private final Pose startPose = new Pose(19.83542039355993, 123.64937388193204, Math.toRadians(143)); // Start Pose of our robot.
     private final Pose launchingPose = new Pose(52, 92, Math.toRadians(135)); // Where our robot launches from
-    private final Pose pickupReady1Pose = new Pose(48, 84, Math.toRadians(180)); // Ready to pick up closest row of balls
-    private final Pose pickup1Pose = new Pose(19, 84, Math.toRadians(180)); // Pick up closest row of balls
-    private final Pose pickupReady2Pose = new Pose(48, 60, Math.toRadians(180)); //Ready to pick up middle row of balls
-    private final Pose pickup2Pose = new Pose(19, 60, Math.toRadians(180)); //Pick up middle row of balls
+    private final Pose pickupReady1Pose = new Pose(48, 60, Math.toRadians(180)); // Ready to pick up closest row of balls
+    private final Pose pickup1Pose = new Pose(19, 60, Math.toRadians(180)); // Pick up closest row of balls
+    private final Pose openGateReadyPose = new Pose(20, 66, Math.toRadians(90)); // Ready to open gate
+    private final Pose openGatePose = new Pose(16, 66, Math.toRadians(90)); // Open gate
+    private final Pose pickupReady2Pose = new Pose(48, 84, Math.toRadians(180)); //Ready to pick up middle row of balls
+    private final Pose pickup2Pose = new Pose(19, 84, Math.toRadians(180)); //Pick up middle row of balls
     private final Pose pickupReady3 = new Pose(48, 38.5, Math.toRadians(180)); //Ready to pick up far balls
     private final Pose endPose = new Pose(19, 38.5, Math.toRadians(180)); //Finish with 3 balls
 
     private Path startToLaunching;
-    private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching2, launchingToPickupReady3, pickupReady3ToFinish;
+    private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToOpenGateReady, openGateReadyToOpenGate, openGateToPickupReady1, pickupReady1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching2, launchingToPickupReady3, pickupReady3ToFinish;
 
     public void buildPaths() {
 
@@ -58,11 +60,26 @@ public class BlueCloseNineBall extends OpMode {
                 .addPath(new BezierLine(pickupReady1Pose, pickup1Pose))
                 .setLinearHeadingInterpolation(pickupReady1Pose.getHeading(), pickup1Pose.getHeading())
                 .build();
-
-        pickup1ToLaunching = follower.pathBuilder()
-                .addPath(new BezierLine(pickup1Pose, launchingPose))
-                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), launchingPose.getHeading())
+        pickup1ToOpenGateReady = follower.pathBuilder()
+                .addPath(new BezierLine(pickup1Pose, openGateReadyPose))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), openGateReadyPose.getHeading())
                 .build();
+
+        openGateReadyToOpenGate = follower.pathBuilder()
+                .addPath(new BezierLine(openGateReadyPose, openGatePose))
+                .setLinearHeadingInterpolation(openGateReadyPose.getHeading(), openGatePose.getHeading())
+                .build();
+
+        openGateToPickupReady1 = follower.pathBuilder()
+                .addPath(new BezierLine(openGatePose, pickupReady1Pose))
+                .setLinearHeadingInterpolation(openGatePose.getHeading(), pickup1Pose.getHeading())
+                .build();
+
+        pickupReady1ToLaunching= follower.pathBuilder()
+                .addPath(new BezierLine(pickupReady1Pose, launchingPose))
+                .setLinearHeadingInterpolation(pickupReady1Pose.getHeading(), launchingPose.getHeading())
+                .build();
+
 
         launchingToPickupReady2 = follower.pathBuilder()
                 .addPath(new BezierLine(launchingPose, pickupReady2Pose))
@@ -98,6 +115,9 @@ public class BlueCloseNineBall extends OpMode {
         LAUNCHING_1,
         PREPARE_TO_INTAKE_POSE_1,
         INTAKE_1,
+        INTAKE_TO_OPEN_GATE_READY_1,
+        OPEN_GATE_1,
+        OPEN_GATE_TO_PICKUP_READY_1,
         GO_TO_LAUNCH_2,
         WAIT_TO_FINISH_PATH_2,
         FIND_TAG_2,
@@ -115,7 +135,7 @@ public class BlueCloseNineBall extends OpMode {
         FINISHED
     }
 
-    BlueCloseNineBall.State state;
+    BlueCloseTwelveBall.State state;
     ElapsedTime driveTimer = new ElapsedTime();
 
 
@@ -213,16 +233,40 @@ public class BlueCloseNineBall extends OpMode {
                 if(!follower.isBusy()){
                     follower.followPath(pickupReady1ToPickup1, .4, false);
                     intake.startIntake();
+                    state = State.INTAKE_TO_OPEN_GATE_READY_1;
+                }
+                break;
+            case INTAKE_TO_OPEN_GATE_READY_1:
+                if(!follower.isBusy()){
+                    follower.followPath(pickup1ToOpenGateReady, false);
+                    intake.stopIntake();
+                    state = State.OPEN_GATE_1;
+                }
+                break;
+            case OPEN_GATE_1:
+                if(!follower.isBusy()){
+                    follower.followPath(openGateReadyToOpenGate, false);
+                    state = State.OPEN_GATE_TO_PICKUP_READY_1;
+                }
+                break;
+            case OPEN_GATE_TO_PICKUP_READY_1:
+                if(!follower.isBusy()){
+                    follower.followPath(openGateToPickupReady1, false);
                     state = State.GO_TO_LAUNCH_2;
                 }
                 break;
             case GO_TO_LAUNCH_2:
                 if(!follower.isBusy()){
-                    follower.followPath(pickup1ToLaunching);
-                    intake.stopIntake();
+
+                    //STOP INTAKE HERE TO AVOID OVERFLOWING BALLS BEFORE LAUNCHING
+
+                    //START SPINNING UP BOTH MOTORS HERE TO IDEAL LAUNCH VELOCITY FROM SHOOTING POSITION
+
+                    follower.followPath(pickupReady1ToLaunching);
                     state = State.WAIT_TO_FINISH_PATH_2;
                 }
                 break;
+
             case WAIT_TO_FINISH_PATH_2:
                 if(!follower.isBusy()){
                     state = State.FIND_TAG_2;
