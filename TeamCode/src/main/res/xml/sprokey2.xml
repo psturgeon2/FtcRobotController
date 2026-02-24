@@ -14,9 +14,10 @@
             <goBILDA5202SeriesMotor name="right_front" port="1" />
             <goBILDA5202SeriesMotor name="left_back" port="2" />
             <goBILDA5202SeriesMotor name="right_back" port="3" />
-            <Servo name="turret_servo" port="2" />
-            <Servo name="blinkin" port="3" />
+            <Servo name="turret_servo" port="1" />
+            <Servo name="blinkin" port="2" />
             <ControlHubImuBHI260AP name="imu" port="0" bus="0" />
+            <goBILDAPinpoint name="pinpoint" port="0" bus="1" />
         </LynxModule>
     </LynxUsbDevice>
 </Robot>
