@@ -39,7 +39,7 @@ public class RedCloseTwelveBall extends OpMode {
     private final Pose pickupReady2Pose = new Pose(98, 84, Math.toRadians(0)); //Ready to pick up closest row of balls
     private final Pose pickup2Pose = new Pose(125, 84, Math.toRadians(0)); //Pick up middle closest of balls
     private final Pose pickupReady3 = new Pose(98, 38.5, Math.toRadians(0)); //Ready to pick up far balls
-    private final Pose endPose = new Pose(125, 38.5, Math.toRadians(0)); //Finish with 3 balls
+    private final Pose endPose = new Pose(128, 66, Math.toRadians(90)); //Finish with 3 balls
 
     private Path startToLaunching;
     private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToOpenGateReady, openGateReadyToOpenGate, openGateToPickupReady1, pickupReady1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching2, launchingToPickupReady3, pickupReady3ToFinish, finishToLaunching3;
