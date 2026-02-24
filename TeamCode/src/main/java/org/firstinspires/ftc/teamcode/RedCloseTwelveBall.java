@@ -34,8 +34,8 @@ public class RedCloseTwelveBall extends OpMode {
     private final Pose launchingPose = new Pose(92, 92, Math.toRadians(45)); // Where our robot launches from
     private final Pose pickupReady1Pose = new Pose(98, 60, Math.toRadians(0)); // Ready to pick up middle row of balls
     private final Pose pickup1Pose = new Pose(125, 60, Math.toRadians(0)); // Pick up middle row of balls
-    private final Pose openGateReadyPose = new Pose(123, 66, Math.toRadians(0)); // Ready to open gate
-    private final Pose openGatePose = new Pose(128, 66, Math.toRadians(0)); // Open gate
+    private final Pose openGateReadyPose = new Pose(123, 66, Math.toRadians(90)); // Ready to open gate
+    private final Pose openGatePose = new Pose(128, 66, Math.toRadians(90)); // Open gate
     private final Pose pickupReady2Pose = new Pose(98, 84, Math.toRadians(0)); //Ready to pick up closest row of balls
     private final Pose pickup2Pose = new Pose(125, 84, Math.toRadians(0)); //Pick up middle closest of balls
     private final Pose pickupReady3 = new Pose(98, 38.5, Math.toRadians(0)); //Ready to pick up far balls
