@@ -166,6 +166,7 @@ public class Launcher {
     }
     public void presetMotorVelocity(int presetSpeed) {
         _launchSpeed = presetSpeed;
+        setMotorVelocity();
     }
 
     public void setMotorVelocityForDistance(double rangeinCm) {
