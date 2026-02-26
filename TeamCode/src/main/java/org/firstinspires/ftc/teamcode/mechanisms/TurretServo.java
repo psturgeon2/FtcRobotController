@@ -29,6 +29,7 @@ public class TurretServo {
         angleError = deltaDegrees;
 
         // try this
+        //TODO: Justin suggests to use a pid control for this
         currentTurretAngle = currentTurretAngle + (deltaDegrees / 500);
         if (currentTurretAngle < 0 || currentTurretAngle > 1) {
             resetTurret();
