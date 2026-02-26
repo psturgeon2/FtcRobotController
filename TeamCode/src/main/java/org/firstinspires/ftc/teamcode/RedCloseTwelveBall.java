@@ -493,7 +493,7 @@ public class RedCloseTwelveBall extends OpMode {
         if (id24 != null && id24.ftcPose != null) {
             numMissingTagReads = 0;
             double angleToTag = id24.ftcPose.bearing;
-            //turret.changeTurretByDegrees(angleToTag);
+            turret.changeTurretByDegrees(angleToTag);
 
             double distanceToGoalCM = id24.ftcPose.range;
             launcher.setMotorVelocityForDistance(distanceToGoalCM);
@@ -504,8 +504,9 @@ public class RedCloseTwelveBall extends OpMode {
             numMissingTagReads++;
             led.setLEDBlue();
         } else {
-            // if we can't see the target/            // default back to neutral/default
-            //turret.resetTurret();
+            // if we can't see the target
+            // default back to neutral/default
+            turret.resetTurret();
             // and turn launch motors off
             launcher.stopLauncher();
             turret.resetTurret();
