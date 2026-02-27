@@ -27,9 +27,17 @@ public class TurretServo {
     /// Adjust turret servo to new position
     public void changeTurretByDegrees(double deltaDegrees) {
         angleError = deltaDegrees;
+        double toChange = (deltaDegrees / 750);
+//        if(deltaDegrees < 5) {
+//            toChange = ;
+//        }
+//        else {
+//            toChange = deltaDegrees / 100;
+//        }
 
         // try this
-        currentTurretAngle = currentTurretAngle + (deltaDegrees / 500);
+        //TODO: Justin suggests to use a pid control for this
+        currentTurretAngle = currentTurretAngle + toChange;
         if (currentTurretAngle < 0 || currentTurretAngle > 1) {
             resetTurret();
         }
