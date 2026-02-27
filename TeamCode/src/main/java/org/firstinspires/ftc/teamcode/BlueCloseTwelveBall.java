@@ -230,7 +230,7 @@ public class BlueCloseTwelveBall extends OpMode {
                 }
                 break;
             case FIND_TAG_1:
-                if(id24 != null){
+                if(id20 != null){
                     state = State.SPIN_UP_1;
                 }
                 break;
@@ -321,7 +321,7 @@ public class BlueCloseTwelveBall extends OpMode {
                 }
                 break;
             case FIND_TAG_2:
-                if(id24 != null){
+                if(id20 != null){
                     state = State.SPIN_UP_2;
                 }
                 break;
@@ -377,7 +377,7 @@ public class BlueCloseTwelveBall extends OpMode {
                 }
                 break;
             case FIND_TAG_3:
-                if(id24 != null){
+                if(id20 != null){
                     state = State.SPIN_UP_3;
                 }
                 break;
@@ -432,7 +432,7 @@ public class BlueCloseTwelveBall extends OpMode {
                 }
                 break;
             case FIND_TAG_4:
-                if(id24 != null){
+                if(id20 != null){
                     state = State.SPIN_UP_4;
                 }
                 break;
