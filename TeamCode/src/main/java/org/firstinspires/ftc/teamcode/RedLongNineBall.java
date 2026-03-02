@@ -34,10 +34,8 @@ public class RedLongNineBall extends OpMode {
     private final Pose launchingPose = new Pose(83.5, 21.5, Math.toRadians(65)); // Where our robot launches from
     private final Pose pickupReady1Pose = new Pose(100, 8, Math.toRadians(0)); // Ready to pick up middle row of balls
     private final Pose pickup1Pose = new Pose(133, 8, Math.toRadians(0)); // Pick up middle row of balls
-    private final Pose pickupReady2Pose = new Pose(98, 84, Math.toRadians(0)); //Ready to pick up closest row of balls
-    private final Pose pickup2Pose = new Pose(125, 84, Math.toRadians(0)); //Pick up middle closest of balls
-    private final Pose pickupReady3 = new Pose(98, 37.5, Math.toRadians(0)); //Ready to pick up far balls
-    private final Pose pickup3Pose = new Pose(125, 37.5, Math.toRadians(0)); //Pick up middle closest of balls
+    private final Pose pickupReady2Pose = new Pose(98, 37.5, Math.toRadians(0)); //Ready to pick up closest row of balls
+    private final Pose pickup2Pose = new Pose(125, 37.5, Math.toRadians(0)); //Pick up middle closest of balls
     private final Pose endPose = new Pose(122, 66, Math.toRadians(90)); //Finish ready to open gate
 
     private Path startToLaunching;
@@ -80,21 +78,6 @@ public class RedLongNineBall extends OpMode {
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), launchingPose.getHeading())
                 .build();
 
-        launchingToPickupReady3 =  follower.pathBuilder()
-                .addPath(new BezierLine(launchingPose, pickupReady3))
-                .setLinearHeadingInterpolation(launchingPose.getHeading(), pickupReady3.getHeading())
-                .build();
-
-        pickupReady3ToPickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(pickupReady3, pickup3Pose))
-                .setLinearHeadingInterpolation(pickupReady3.getHeading(), pickup3Pose.getHeading())
-                .build();
-
-        pickup3ToLaunching = follower.pathBuilder()
-                .addPath(new BezierLine(pickup3Pose, launchingPose))
-                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), launchingPose.getHeading())
-                .build();
-
         launchingToFinish = follower.pathBuilder()
                 .addPath(new BezierLine(launchingPose, endPose))
                 .setLinearHeadingInterpolation(launchingPose.getHeading(), endPose.getHeading())
@@ -109,7 +92,6 @@ public class RedLongNineBall extends OpMode {
         LAUNCHING_1,
         PREPARE_TO_INTAKE_POSE_1,
         INTAKE_1,
-        INTAKE_TO_OPEN_GATE_READY_1,
         GO_TO_LAUNCH_2,
         WAIT_TO_FINISH_PATH_2,
         FIND_TAG_2,
@@ -122,13 +104,6 @@ public class RedLongNineBall extends OpMode {
         FIND_TAG_3,
         SPIN_UP_3,
         LAUNCHING_3,
-        PREPARE_TO_INTAKE_POSE_3,
-        INTAKE_3,
-        GO_TO_LAUNCH_4,
-        WAIT_TO_FINISH_PATH_4,
-        SPIN_UP_4,
-        LAUNCHING_4,
-        FIND_TAG_4,
         GO_TO_END_POSE,
         FINISHED,
     }
@@ -185,10 +160,7 @@ public class RedLongNineBall extends OpMode {
                 state == State.LAUNCHING_2 ||
                 state == State.FIND_TAG_3 ||
                 state == State.SPIN_UP_3 ||
-                state == State.LAUNCHING_3 ||
-                state == State.FIND_TAG_4 ||
-                state == State.SPIN_UP_4 ||
-                state == State.LAUNCHING_4)
+                state == State.LAUNCHING_3 )
         {
             doAprilTag();
         }
@@ -203,7 +175,7 @@ public class RedLongNineBall extends OpMode {
 
                 break;
             case WAIT_TO_FINISH_PATH_1:
-                launcher.presetMotorVelocity(1000);
+                launcher.presetMotorVelocity(1400);
                 if(!follower.isBusy()){
                     state = State.FIND_TAG_1;
                 }
@@ -249,7 +221,7 @@ public class RedLongNineBall extends OpMode {
                 if(!follower.isBusy()){
                     follower.followPath(pickupReady1ToPickup1, .4, false);
                     intake.startIntake();
-                    state = State.INTAKE_TO_OPEN_GATE_READY_1;
+                    state = State.GO_TO_LAUNCH_2;
                 }
                 break;
             case GO_TO_LAUNCH_2:
@@ -264,7 +236,7 @@ public class RedLongNineBall extends OpMode {
                 }
                 break;
             case WAIT_TO_FINISH_PATH_2:
-                launcher.presetMotorVelocity(1000);
+                launcher.presetMotorVelocity(1400);
                 if(!follower.isBusy()){
                     state = State.FIND_TAG_2;
                 }
@@ -321,7 +293,7 @@ public class RedLongNineBall extends OpMode {
                 break;
             case WAIT_TO_FINISH_PATH_3:
                 if(!follower.isBusy()){
-                    launcher.presetMotorVelocity(1000);
+                    launcher.presetMotorVelocity(1400);
                     state = State.FIND_TAG_3;
                 }
                 break;
@@ -339,62 +311,6 @@ public class RedLongNineBall extends OpMode {
                 }
                 break;
             case LAUNCHING_3:
-                if (driveTimer.seconds() < 1.5) {
-                    intake.startIntake();
-                    launcher.loadBall();
-                }
-                else {
-                    intake.stopIntake();
-                    launcher.resetFeeder();
-                    Launcher.LaunchState = Launcher.LaunchState.IDLE;
-                    launcher.stopLauncher();
-                    state = State.PREPARE_TO_INTAKE_POSE_3;
-                    driveTimer.reset();
-                }
-                break;
-            case PREPARE_TO_INTAKE_POSE_3:
-                if(!follower.isBusy()){
-                    follower.followPath(launchingToPickupReady3, true);
-                    state = State.INTAKE_3;
-                }
-
-            case INTAKE_3:
-                if(!follower.isBusy()){
-                    intake.startIntake();
-                    follower.followPath(pickupReady3ToPickup3);
-                    driveTimer.reset();
-                    state = State.GO_TO_LAUNCH_4;
-                }
-                break;
-
-            case GO_TO_LAUNCH_4:
-                if(!follower.isBusy()){
-                    intake.stopIntake();
-                    follower.followPath(pickup3ToLaunching);
-                    state = State.WAIT_TO_FINISH_PATH_4;
-                }
-                break;
-            case WAIT_TO_FINISH_PATH_4:
-                if(!follower.isBusy()){
-                    launcher.presetMotorVelocity(1000);
-                    state = State.FIND_TAG_4;
-                }
-                break;
-            case FIND_TAG_4:
-                if(id24 != null){
-                    state = State.SPIN_UP_4;
-                }
-                break;
-            case SPIN_UP_4:
-                speedError = launcher.getLaunchSpeedError();
-                angleError = turret.getAngleError();
-                if (speedError < 50 && angleError < 2){
-                    driveTimer.reset();
-                    state = State.LAUNCHING_4;
-
-                }
-                break;
-            case LAUNCHING_4:
                 if (driveTimer.seconds() < 1.5) {
                     intake.startIntake();
                     launcher.loadBall();
