@@ -86,6 +86,8 @@ public class RedTeleOp  extends OpMode {
             telemetry.addLine("preset 1400");
         } else if (gamepad2.b) {
             telemetry.addLine("skip april tag");
+            launcher.stopLauncher();
+            turret.resetTurret();
             //This skips the april tag reading and math
         }
 
@@ -99,13 +101,9 @@ public class RedTeleOp  extends OpMode {
         //  launcher.setMotorVelocity();
 
 // Added a way for Game Controller 1 to do everything for testing
-        if (gamepad2.right_stick_y == 1 || gamepad1.a) {
-            //     if (!launcher.getTriggerActive()) {
-            // TODO: maybe also check to see that launcher measured velocities are within 10%(?) of target velocity
-            //         launcher.triggerFeeder();
+        if (gamepad2.a) {
             launcher.loadBall();
-
-        } else if (gamepad2.x) {
+        } else if (gamepad1.x) {
             launcher.unloadBall();
         } else {
             launcher.resetFeeder();
@@ -119,26 +117,28 @@ public class RedTeleOp  extends OpMode {
             launcher.stopLauncher();
         }
 
-        /*if (gamepad2.aWasPressed()) {
-            launcher.incrementLaunchSpeed();
-        } else if (gamepad2.bWasPressed()) {
-            launcher.decrementLaunchSpeed();
-        }*/
-
-        if (gamepad2.xWasPressed()) {
-            turret.incrementTurretPosition();
-        } else if (gamepad2.yWasPressed()) {
-            turret.decrementTurretPosition();
-        }
-
         //For Intake (test if same buttons works)
-        if (gamepad1.right_trigger != 0 || gamepad2.right_stick_y == 1.0) {
+        if (gamepad1.right_trigger_pressed || gamepad2.right_trigger_pressed) {
             intake.startIntake();
         } else if (gamepad1.left_trigger != 0) {
             intake.reverseIntake();
         } else {
             intake.stopIntake();
         }
+
+        /*if (gamepad2.aWasPressed()) {
+            launcher.incrementLaunchSpeed();
+        } else if (gamepad2.bWasPressed()) {
+            launcher.decrementLaunchSpeed();
+        }*/
+
+//        if (gamepad2.xWasPressed()) {
+//            turret.incrementTurretPosition();
+//        } else if (gamepad2.yWasPressed()) {
+//            turret.decrementTurretPosition();
+//        }
+
+
 
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
         // Note: pushing left stick forward gives negative value
