@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Autonomous
-public class BlueCloseTwelveBall extends OpMode {
+public class RedLongNineBall extends OpMode {
     MecanumDrive drive = new MecanumDrive();
     Intake intake = new Intake();
     Launcher launcher = new Launcher();
@@ -30,20 +30,16 @@ public class BlueCloseTwelveBall extends OpMode {
     private Follower follower;
 
     //Test this later to make sure that it shifts the auto a little left (Start position X was 124)
-    private final Pose startPose = new Pose(19.83542039355993, 123.64937388193204, Math.toRadians(143)); // Start Pose of our robot.
-    private final Pose launchingPose = new Pose(52, 92, Math.toRadians(135)); // Where our robot launches from
-    private final Pose pickupReady1Pose = new Pose(48, 63, Math.toRadians(180)); // Ready to pick up closest row of balls
-    private final Pose pickup1Pose = new Pose(19, 63, Math.toRadians(180)); // Pick up closest row of balls
-    private final Pose openGateReadyPose = new Pose(20, 66, Math.toRadians(90)); // Ready to open gate
-    private final Pose openGatePose = new Pose(16, 66, Math.toRadians(90)); // Open gate
-    private final Pose pickupReady2Pose = new Pose(48, 87, Math.toRadians(180)); //Ready to pick up middle row of balls
-    private final Pose pickup2Pose = new Pose(19, 87, Math.toRadians(180)); //Pick up middle row of balls
-    private final Pose pickupReady3 = new Pose(48, 41.5, Math.toRadians(180)); //Ready to pick up far balls
-    private final Pose pickup3Pose = new Pose(19, 41.5, Math.toRadians(180)); //Finish with 3 balls
-    private final Pose endPose = new Pose(20, 66, Math.toRadians(90)); //Finish ready to open gate
+    private final Pose startPose = new Pose(88.8, 8, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose launchingPose = new Pose(83.5, 21.5, Math.toRadians(65)); // Where our robot launches from
+    private final Pose pickupReady1Pose = new Pose(100, 8, Math.toRadians(0)); // Ready to pick up middle row of balls
+    private final Pose pickup1Pose = new Pose(133, 8, Math.toRadians(0)); // Pick up middle row of balls
+    private final Pose pickupReady2Pose = new Pose(98, 37.5, Math.toRadians(0)); //Ready to pick up closest row of balls
+    private final Pose pickup2Pose = new Pose(125, 37.5, Math.toRadians(0)); //Pick up middle closest of balls
+    private final Pose endPose = new Pose(122, 66, Math.toRadians(90)); //Finish ready to open gate
 
     private Path startToLaunching;
-    private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToOpenGateReady, openGateReadyToOpenGate, openGateToPickupReady1, pickupReady1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching, launchingToPickupReady3, pickupReady3ToPickup3, pickup3ToLaunching, launchingToFinish;
+    private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching, launchingToPickupReady3, pickupReady3ToPickup3, pickup3ToLaunching, launchingToFinish;
 
     public void buildPaths() {
 
@@ -62,24 +58,9 @@ public class BlueCloseTwelveBall extends OpMode {
                 .setLinearHeadingInterpolation(pickupReady1Pose.getHeading(), pickup1Pose.getHeading())
                 .build();
 
-        pickup1ToOpenGateReady = follower.pathBuilder()
-                .addPath(new BezierLine(pickup1Pose, openGateReadyPose))
-                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), openGateReadyPose.getHeading())
-                .build();
-
-        openGateReadyToOpenGate = follower.pathBuilder()
-                .addPath(new BezierLine(openGateReadyPose, openGatePose))
-                .setLinearHeadingInterpolation(openGateReadyPose.getHeading(), openGatePose.getHeading())
-                .build();
-
-        openGateToPickupReady1 = follower.pathBuilder()
-                .addPath(new BezierLine(openGatePose, pickupReady1Pose))
-                .setLinearHeadingInterpolation(openGatePose.getHeading(), pickup1Pose.getHeading())
-                .build();
-
-        pickupReady1ToLaunching= follower.pathBuilder()
-                .addPath(new BezierLine(pickupReady1Pose, launchingPose))
-                .setLinearHeadingInterpolation(pickupReady1Pose.getHeading(), launchingPose.getHeading())
+        pickup1ToLaunching= follower.pathBuilder()
+                .addPath(new BezierLine(pickup1Pose, launchingPose))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), launchingPose.getHeading())
                 .build();
 
         launchingToPickupReady2 = follower.pathBuilder()
@@ -97,21 +78,6 @@ public class BlueCloseTwelveBall extends OpMode {
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), launchingPose.getHeading())
                 .build();
 
-        launchingToPickupReady3 =  follower.pathBuilder()
-                .addPath(new BezierLine(launchingPose, pickupReady3))
-                .setLinearHeadingInterpolation(launchingPose.getHeading(), pickupReady3.getHeading())
-                .build();
-
-        pickupReady3ToPickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(pickupReady3, pickup3Pose))
-                .setLinearHeadingInterpolation(pickupReady3.getHeading(), pickup3Pose.getHeading())
-                .build();
-
-        pickup3ToLaunching = follower.pathBuilder()
-                .addPath(new BezierLine(pickup3Pose, launchingPose))
-                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), launchingPose.getHeading())
-                .build();
-
         launchingToFinish = follower.pathBuilder()
                 .addPath(new BezierLine(launchingPose, endPose))
                 .setLinearHeadingInterpolation(launchingPose.getHeading(), endPose.getHeading())
@@ -126,11 +92,6 @@ public class BlueCloseTwelveBall extends OpMode {
         LAUNCHING_1,
         PREPARE_TO_INTAKE_POSE_1,
         INTAKE_1,
-        INTAKE_TO_OPEN_GATE_READY_1,
-        OPEN_GATE_1,
-        GOING_TO_GATE,
-        HOLD_GATE,
-        OPEN_GATE_TO_PICKUP_READY_1,
         GO_TO_LAUNCH_2,
         WAIT_TO_FINISH_PATH_2,
         FIND_TAG_2,
@@ -143,13 +104,6 @@ public class BlueCloseTwelveBall extends OpMode {
         FIND_TAG_3,
         SPIN_UP_3,
         LAUNCHING_3,
-        PREPARE_TO_INTAKE_POSE_3,
-        INTAKE_3,
-        GO_TO_LAUNCH_4,
-        WAIT_TO_FINISH_PATH_4,
-        SPIN_UP_4,
-        LAUNCHING_4,
-        FIND_TAG_4,
         GO_TO_END_POSE,
         FINISHED,
     }
@@ -206,14 +160,11 @@ public class BlueCloseTwelveBall extends OpMode {
                 state == State.LAUNCHING_2 ||
                 state == State.FIND_TAG_3 ||
                 state == State.SPIN_UP_3 ||
-                state == State.LAUNCHING_3 ||
-                state == State.FIND_TAG_4 ||
-                state == State.SPIN_UP_4 ||
-                state == State.LAUNCHING_4)
+                state == State.LAUNCHING_3 )
         {
             doAprilTag();
         }
-        AprilTagDetection id20 = aprilTagWebcam.getTagBySpecificId(20);
+        AprilTagDetection id24 = aprilTagWebcam.getTagBySpecificId(24);
 
         switch (state) {
             case GO_TO_LAUNCH_1:
@@ -224,13 +175,13 @@ public class BlueCloseTwelveBall extends OpMode {
 
                 break;
             case WAIT_TO_FINISH_PATH_1:
-                launcher.presetMotorVelocity(1000);
+                launcher.presetMotorVelocity(1400);
                 if(!follower.isBusy()){
                     state = State.FIND_TAG_1;
                 }
                 break;
             case FIND_TAG_1:
-                if(id20 != null){
+                if(id24 != null){
                     state = State.SPIN_UP_1;
                 }
                 break;
@@ -270,36 +221,6 @@ public class BlueCloseTwelveBall extends OpMode {
                 if(!follower.isBusy()){
                     follower.followPath(pickupReady1ToPickup1, .4, false);
                     intake.startIntake();
-                    state = State.INTAKE_TO_OPEN_GATE_READY_1;
-                }
-                break;
-            case INTAKE_TO_OPEN_GATE_READY_1:
-                if(!follower.isBusy()){
-                    follower.followPath(pickup1ToOpenGateReady, false);
-                    intake.stopIntake();
-                    state = State.OPEN_GATE_1;
-                }
-                break;
-            case OPEN_GATE_1:
-                if(!follower.isBusy()){
-                    follower.followPath(openGateReadyToOpenGate, false);
-                    state = State.GOING_TO_GATE;
-                }
-                break;
-            case GOING_TO_GATE:
-                if(!follower.isBusy()){
-                    driveTimer.reset();
-                    state = State.HOLD_GATE;
-                }
-                break;
-            case HOLD_GATE:
-                if (driveTimer.seconds() > .5){
-                    state = State.OPEN_GATE_TO_PICKUP_READY_1;
-                }
-                break;
-            case OPEN_GATE_TO_PICKUP_READY_1:
-                if(!follower.isBusy()){
-                    follower.followPath(openGateToPickupReady1, false);
                     state = State.GO_TO_LAUNCH_2;
                 }
                 break;
@@ -310,18 +231,18 @@ public class BlueCloseTwelveBall extends OpMode {
 
                     //START SPINNING UP BOTH MOTORS HERE TO IDEAL LAUNCH VELOCITY FROM SHOOTING POSITION
 
-                    follower.followPath(pickupReady1ToLaunching);
+                    follower.followPath(pickup1ToLaunching);
                     state = State.WAIT_TO_FINISH_PATH_2;
                 }
                 break;
             case WAIT_TO_FINISH_PATH_2:
-                launcher.presetMotorVelocity(1000);
+                launcher.presetMotorVelocity(1400);
                 if(!follower.isBusy()){
                     state = State.FIND_TAG_2;
                 }
                 break;
             case FIND_TAG_2:
-                if(id20 != null){
+                if(id24 != null){
                     state = State.SPIN_UP_2;
                 }
                 break;
@@ -372,12 +293,12 @@ public class BlueCloseTwelveBall extends OpMode {
                 break;
             case WAIT_TO_FINISH_PATH_3:
                 if(!follower.isBusy()){
-                    launcher.presetMotorVelocity(1000);
+                    launcher.presetMotorVelocity(1400);
                     state = State.FIND_TAG_3;
                 }
                 break;
             case FIND_TAG_3:
-                if(id20 != null){
+                if(id24 != null){
                     state = State.SPIN_UP_3;
                 }
                 break;
@@ -390,62 +311,6 @@ public class BlueCloseTwelveBall extends OpMode {
                 }
                 break;
             case LAUNCHING_3:
-                if (driveTimer.seconds() < 1.5) {
-                    intake.startIntake();
-                    launcher.loadBall();
-                }
-                else {
-                    intake.stopIntake();
-                    launcher.resetFeeder();
-                    Launcher.LaunchState = Launcher.LaunchState.IDLE;
-                    launcher.stopLauncher();
-                    state = State.PREPARE_TO_INTAKE_POSE_3;
-                    driveTimer.reset();
-                }
-                break;
-            case PREPARE_TO_INTAKE_POSE_3:
-                if(!follower.isBusy()){
-                    follower.followPath(launchingToPickupReady3, true);
-                    state = State.INTAKE_3;
-                }
-
-            case INTAKE_3:
-                if(!follower.isBusy()){
-                    intake.startIntake();
-                    follower.followPath(pickupReady3ToPickup3);
-                    driveTimer.reset();
-                    state = State.GO_TO_LAUNCH_4;
-                }
-                break;
-
-            case GO_TO_LAUNCH_4:
-                if(!follower.isBusy()){
-                    intake.stopIntake();
-                    follower.followPath(pickup3ToLaunching);
-                    state = State.WAIT_TO_FINISH_PATH_4;
-                }
-                break;
-            case WAIT_TO_FINISH_PATH_4:
-                if(!follower.isBusy()){
-                    launcher.presetMotorVelocity(1000);
-                    state = State.FIND_TAG_4;
-                }
-                break;
-            case FIND_TAG_4:
-                if(id20 != null){
-                    state = State.SPIN_UP_4;
-                }
-                break;
-            case SPIN_UP_4:
-                speedError = launcher.getLaunchSpeedError();
-                angleError = turret.getAngleError();
-                if (speedError < 50 && angleError < 2){
-                    driveTimer.reset();
-                    state = State.LAUNCHING_4;
-
-                }
-                break;
-            case LAUNCHING_4:
                 if (driveTimer.seconds() < 1.5) {
                     intake.startIntake();
                     launcher.loadBall();
@@ -487,15 +352,15 @@ public class BlueCloseTwelveBall extends OpMode {
     private void doAprilTag() {
         //Update the vision portal
         aprilTagWebcam.update();
-        AprilTagDetection id20 = aprilTagWebcam.getTagBySpecificId(20); // TAG ID 24 is the red goal
+        AprilTagDetection id24 = aprilTagWebcam.getTagBySpecificId(24); // TAG ID 24 is the red goal
         //aprilTagWebcam.displayDetectionTelemetry(id24);
         // NOTE: we will need a separate OPMODE (otherwise identical) that sets the target TAGID to BLUE (#20)
-        if (id20 != null && id20.ftcPose != null) {
+        if (id24 != null && id24.ftcPose != null) {
             numMissingTagReads = 0;
-            double angleToTag = id20.ftcPose.bearing;
+            double angleToTag = id24.ftcPose.bearing;
             turret.changeTurretByDegrees(angleToTag);
 
-            double distanceToGoalCM = id20.ftcPose.range;
+            double distanceToGoalCM = id24.ftcPose.range;
             launcher.setMotorVelocityForDistance(distanceToGoalCM);
             led.setLEDGreen();
             // NOTE: use this after distance vs speed has been measured and calibrated
