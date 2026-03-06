@@ -21,6 +21,7 @@ public class BlueTeleOp  extends OpMode {
     TurretServo turret = new TurretServo();
     LEDIndicator led = new LEDIndicator();
     int numMissingTagReads = 0;
+    //int fineTune = 0;
 
 
     @Override
@@ -37,6 +38,15 @@ public class BlueTeleOp  extends OpMode {
     @Override
     public void loop() {
 
+        /*
+        //fine tune to test auto aim
+        if (gamepad1.dpadUpWasPressed()) {
+            fineTune = fineTune + 1;
+        } else if (gamepad1.dpadDownWasPressed()) {
+            fineTune = fineTune - 1;
+        }
+         */
+
         if (!gamepad2.b && !gamepad2.right_bumper && !gamepad2.left_bumper) {
             //Update the vision portal
             aprilTagWebcam.update();
@@ -45,10 +55,10 @@ public class BlueTeleOp  extends OpMode {
             // NOTE: we will need a separate OPMODE (otherwise identical) that sets the target TAGID to BLUE (#20)
             if (id20 != null && id20.ftcPose != null) {
                 numMissingTagReads = 0;
-                double angleToTag = id20.ftcPose.bearing;
+                double angleToTag = id20.ftcPose.bearing + 4;
                 turret.changeTurretByDegrees(angleToTag);
 
-                double distanceToGoalCM = id20.ftcPose.range;
+                double distanceToGoalCM = id20.ftcPose.range - 23;
                 launcher.setMotorVelocityForDistance(distanceToGoalCM);
                 // NOTE: use this after distance vs speed has been measured and calibrated
             } else if (numMissingTagReads < 100) {
@@ -85,6 +95,7 @@ public class BlueTeleOp  extends OpMode {
             launcher.presetMotorVelocity(1400);
             telemetry.addLine("preset 1400");
         } else if (gamepad2.b) {
+            launcher.stopLauncher();
             telemetry.addLine("skip april tag");
             //This skips the april tag reading and math
         }
@@ -105,7 +116,7 @@ public class BlueTeleOp  extends OpMode {
             //         launcher.triggerFeeder();
             launcher.loadBall();
 
-        } else if (gamepad2.x) {
+        } else if (gamepad2.x || gamepad1.x) {
             launcher.unloadBall();
         } else {
             launcher.resetFeeder();
@@ -153,6 +164,7 @@ public class BlueTeleOp  extends OpMode {
 
         //telemetry.addData("Distance to goal: ", distanceToGoalCM);
         // telemetry.addLine("Feeder active: " + launcher.getTriggerActive());
+        //telemetry.addLine("Turret Power Change: " + fineTune);
         telemetry.addLine("Missed Tag Reads: " + numMissingTagReads);
         telemetry.addLine("Target Velocity: " + launcher.getTargetLaunchSpeed());
         telemetry.addLine("Right Velocity: " + launcher.getLowerVelocity());
