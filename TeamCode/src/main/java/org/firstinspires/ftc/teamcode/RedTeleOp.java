@@ -101,9 +101,13 @@ public class RedTeleOp  extends OpMode {
         //  launcher.setMotorVelocity();
 
 // Added a way for Game Controller 1 to do everything for testing
-        if (gamepad2.a) {
+        if (gamepad2.right_trigger_pressed || gamepad1.a) {
+            //     if (!launcher.getTriggerActive()) {
+            // TODO: maybe also check to see that launcher measured velocities are within 10%(?) of target velocity
+            //         launcher.triggerFeeder();
             launcher.loadBall();
-        } else if (gamepad1.x) {
+
+        } else if (gamepad2.x) {
             launcher.unloadBall();
         } else {
             launcher.resetFeeder();

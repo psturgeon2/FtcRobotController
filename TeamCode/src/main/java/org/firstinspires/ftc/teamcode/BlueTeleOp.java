@@ -99,7 +99,7 @@ public class BlueTeleOp  extends OpMode {
         //  launcher.setMotorVelocity();
 
 // Added a way for Game Controller 1 to do everything for testing
-        if (gamepad2.right_stick_y == 1 || gamepad1.a) {
+        if (gamepad2.right_trigger_pressed || gamepad1.a) {
             //     if (!launcher.getTriggerActive()) {
             // TODO: maybe also check to see that launcher measured velocities are within 10%(?) of target velocity
             //         launcher.triggerFeeder();

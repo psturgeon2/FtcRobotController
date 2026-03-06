@@ -60,11 +60,11 @@ public class ControllerTest extends OpMode {
         }
 
         if(gamepad1.left_trigger != 0){
-            telemetry.addData("Left Trigger:" , "Left Trigger");
+            telemetry.addData("Left Trigger:" , gamepad1.left_trigger);
         }
 
         if(gamepad1.right_trigger != 0){
-            telemetry.addData("Right Trigger:" , "Right Trigger");
+            telemetry.addData("Right Trigger:" , gamepad1.right_trigger);
         }
 
         if(gamepad1.left_stick_x != 0 || gamepad1.left_stick_y != 0){
