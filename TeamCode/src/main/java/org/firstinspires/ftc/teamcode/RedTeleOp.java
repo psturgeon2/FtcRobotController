@@ -1,0 +1,184 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.sun.tools.doclint.Entity;
+
+import org.firstinspires.ftc.teamcode.mechanisms.AprilTagsWebcam;
+import org.firstinspires.ftc.teamcode.mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.mechanisms.LEDIndicator;
+import org.firstinspires.ftc.teamcode.mechanisms.Launcher;
+import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.TurretServo;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+@TeleOp
+public class RedTeleOp  extends OpMode {
+    AprilTagsWebcam aprilTagWebcam = new AprilTagsWebcam();
+    Launcher launcher = new Launcher();
+    MecanumDrive drive = new MecanumDrive();
+    Intake intake = new Intake();
+    TurretServo turret = new TurretServo();
+    LEDIndicator led = new LEDIndicator();
+    int numMissingTagReads = 0;
+    boolean slowMode = false;
+
+
+    @Override
+    public void init() {
+        aprilTagWebcam.init(hardwareMap, telemetry);
+        launcher.init(hardwareMap);
+        drive.init(hardwareMap);
+        intake.init(hardwareMap);
+        turret.init(hardwareMap);
+        led.init(hardwareMap);
+        // turret.init(hardwareMap);
+    }
+
+    @Override
+    public void loop() {
+
+        if (!gamepad2.b && !gamepad2.right_bumper && !gamepad2.left_bumper) {
+            //Update the vision portal
+            aprilTagWebcam.update();
+            AprilTagDetection id24 = aprilTagWebcam.getTagBySpecificId(24); // TAG ID 24 is the red goal
+            aprilTagWebcam.displayDetectionTelemetry(id24);
+            // NOTE: we will need a separate OPMODE (otherwise identical) that sets the target TAGID to BLUE (#20)
+            if (id24 != null && id24.ftcPose != null) {
+                numMissingTagReads = 0;
+                double angleToTag = id24.ftcPose.bearing;
+                turret.changeTurretByDegrees(angleToTag + 4);
+
+                double distanceToGoalCM = id24.ftcPose.range;
+                launcher.setMotorVelocityForDistance(distanceToGoalCM - 23);
+                // NOTE: use this after distance vs speed has been measured and calibrated
+            } else if (numMissingTagReads < 100) {
+                numMissingTagReads++;
+            } else {
+                // if we can't see the target
+                // default back to neutral/default
+                // and turn launch motors off
+                launcher.stopLauncher();
+                turret.resetTurret();
+            }
+
+            if (numMissingTagReads >= 100) {
+                led.setLEDRed();
+            } else if (id24 != null && id24.ftcPose != null) {
+                double speedError = launcher.getLaunchSpeedError();
+                double angleError = turret.getAngleError();
+                if (speedError < 50 && angleError < 2) {
+                    led.setLEDGreen();
+                } else {
+                    led.setLEDBlue();
+                }
+            }
+            // set LED to yellow? Or something else to indicate we don't have 100 missed reads, but aren't facing the tag now
+            // if we turn quick enough, no guarantee that we will get an angle error...
+            // maybe just > 10 missedTagReads? that would indicate that the tag reads are sketchy even if facing it
+            else if (numMissingTagReads > 10) { // || angleError > 5
+                led.setLEDRed();
+            }
+        } else if (gamepad2.right_bumper) {
+            launcher.presetMotorVelocity(1000);
+            telemetry.addLine("Preset 1000");
+        } else if (gamepad2.left_bumper) {
+            launcher.presetMotorVelocity(1400);
+            telemetry.addLine("preset 1400");
+        } else if (gamepad2.b) {
+            telemetry.addLine("skip april tag");
+            launcher.stopLauncher();
+            turret.resetTurret();
+            //This skips the april tag reading and math
+        }
+
+
+        // these are manual test methods to assist with tuning the target launch motor velocity at measured distances
+        if (gamepad2.leftStickButtonWasPressed()) {
+            //      launcher.incrementLaunchSpeed();
+        } else if (gamepad2.rightStickButtonWasPressed()) {
+            //      launcher.decrementLaunchSpeed();
+        }
+        //  launcher.setMotorVelocity();
+
+// Added a way for Game Controller 1 to do everything for testing
+        if (gamepad2.right_trigger_pressed || gamepad1.a) {
+            //     if (!launcher.getTriggerActive()) {
+            // TODO: maybe also check to see that launcher measured velocities are within 10%(?) of target velocity
+            //         launcher.triggerFeeder();
+            launcher.loadBall();
+
+        } else if (gamepad2.x || gamepad1.x) {
+            launcher.unloadBall();
+        } else {
+            launcher.resetFeeder();
+        }
+
+
+        if (gamepad2.leftStickButtonWasPressed()) {
+            launcher.startLauncher();
+            telemetry.addLine("Left Stick Was Pressed");
+        } else if (gamepad2.rightStickButtonWasPressed()) {
+            launcher.stopLauncher();
+        }
+
+        //For Intake (test if same buttons works)
+        if (gamepad1.right_trigger_pressed || gamepad2.right_trigger_pressed) {
+            intake.startIntake();
+        } else if (gamepad1.left_trigger != 0) {
+            intake.reverseIntake();
+        } else {
+            intake.stopIntake();
+        }
+
+        /*if (gamepad2.aWasPressed()) {
+            launcher.incrementLaunchSpeed();
+        } else if (gamepad2.bWasPressed()) {
+            launcher.decrementLaunchSpeed();
+        }*/
+
+//        if (gamepad2.xWasPressed()) {
+//            turret.incrementTurretPosition();
+//        } else if (gamepad2.yWasPressed()) {
+//            turret.decrementTurretPosition();
+//        }
+
+
+
+        // slow mode
+        if(gamepad2.y){
+            drive.drive(-gamepad1.left_stick_y * 0.5, gamepad1.left_stick_x * 0.5, gamepad1.right_stick_x * 0.5);
+        } else {
+            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+            // Note: pushing left stick forward gives negative value
+            drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
+
+
+        // update launcher state machine
+        //launcher.updateState();
+        launcher.setMotorVelocity();
+
+
+
+
+        //telemetry.addData("Distance to goal: ", distanceToGoalCM);
+        // telemetry.addLine("Feeder active: " + launcher.getTriggerActive());
+        telemetry.addLine("Missed Tag Reads: " + numMissingTagReads);
+        telemetry.addLine("Target Velocity: " + launcher.getTargetLaunchSpeed());
+        telemetry.addLine("Right Velocity: " + launcher.getLowerVelocity());
+        telemetry.addLine("Left Velocity: " + launcher.getUpperVelocity());
+        telemetry.addData("State: ", launcher.getState());
+        String turretPositionStr = String.format("%.2f",turret.getCurrentPosition());
+        telemetry.addLine("Turret Position: " + turretPositionStr);
+        /*
+        String leftStickX = String.format("%.2f",gamepad1.left_stick_x);
+        telemetry.addLine("Left Stick X:" + leftStickX);
+        String leftStickY = String.format("%.2f",gamepad1.left_stick_y);
+        telemetry.addLine("Left Stick X:" + leftStickY);
+        String rightStickX = String.format("%.2f",gamepad1.right_stick_x);
+        telemetry.addLine("Left Stick X:" + rightStickX);
+        */
+
+    }
+}

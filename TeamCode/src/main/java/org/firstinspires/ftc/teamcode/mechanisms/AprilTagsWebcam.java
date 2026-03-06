@@ -74,6 +74,14 @@ public class AprilTagsWebcam {
                 return detection;
             }
         }
+
+        if (id == 0){
+            if (detectedTags.size() > 0) {
+                return detectedTags.get(0);
+            }
+        }
+
+
         return null;
     }
 
@@ -81,5 +89,9 @@ public class AprilTagsWebcam {
         if (visionPortal != null) {
             visionPortal.close();
         }
+    }
+
+    public void displayAnyTag() {
+
     }
 }
