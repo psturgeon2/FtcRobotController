@@ -21,6 +21,7 @@ public class RedTeleOp  extends OpMode {
     TurretServo turret = new TurretServo();
     LEDIndicator led = new LEDIndicator();
     int numMissingTagReads = 0;
+    boolean slowMode = false;
 
 
     @Override
@@ -107,7 +108,7 @@ public class RedTeleOp  extends OpMode {
             //         launcher.triggerFeeder();
             launcher.loadBall();
 
-        } else if (gamepad2.x) {
+        } else if (gamepad2.x || gamepad1.x) {
             launcher.unloadBall();
         } else {
             launcher.resetFeeder();
@@ -144,9 +145,15 @@ public class RedTeleOp  extends OpMode {
 
 
 
-        // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-        // Note: pushing left stick forward gives negative value
-        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        // slow mode
+        if(gamepad2.y){
+            drive.drive(-gamepad1.left_stick_y * 0.5, gamepad1.left_stick_x * 0.5, gamepad1.right_stick_x * 0.5);
+        } else {
+            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+            // Note: pushing left stick forward gives negative value
+            drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
+
 
         // update launcher state machine
         //launcher.updateState();
