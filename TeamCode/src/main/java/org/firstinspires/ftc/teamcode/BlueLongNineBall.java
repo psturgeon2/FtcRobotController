@@ -34,9 +34,9 @@ public class BlueLongNineBall extends OpMode {
     private final Pose launchingPose = new Pose(60, 21.5, Math.toRadians(112)); // Where our robot launches from
     private final Pose pickupReady1Pose = new Pose(40, 8, Math.toRadians(180)); // Ready to pick up corner balls
     private final Pose pickup1Pose = new Pose(10, 8, Math.toRadians(180)); // pickup corner balls
-    private final Pose pickupReady2Pose = new Pose(48, 41.5, Math.toRadians(180)); //Ready to pick up close balls
-    private final Pose pickup2Pose = new Pose(19, 41.5, Math.toRadians(180)); //pickup close balls
-    private final Pose endPose = new Pose(20, 66, Math.toRadians(90)); //Finish ready to open gate
+    private final Pose pickupReady2Pose = new Pose(48, 38, Math.toRadians(180)); //Ready to pick up close balls
+    private final Pose pickup2Pose = new Pose(19, 38, Math.toRadians(180)); //pickup close balls
+    private final Pose endPose = new Pose(25, 66, Math.toRadians(90)); //Finish ready to open gate
 
     private Path startToLaunching;
     private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching, launchingToPickupReady3, pickupReady3ToPickup3, pickup3ToLaunching, launchingToFinish;
@@ -91,7 +91,8 @@ public class BlueLongNineBall extends OpMode {
         SPIN_UP_1,
         LAUNCHING_1,
         PREPARE_TO_INTAKE_POSE_1,
-        INTAKE_1,
+        INTAKE_1_1,
+        INTAKE_1_2,
         GO_TO_LAUNCH_2,
         WAIT_TO_FINISH_PATH_2,
         FIND_TAG_2,
@@ -164,7 +165,7 @@ public class BlueLongNineBall extends OpMode {
         {
             doAprilTag();
         }
-        AprilTagDetection id24 = aprilTagWebcam.getTagBySpecificId(24);
+        AprilTagDetection id20 = aprilTagWebcam.getTagBySpecificId(20);
 
         switch (state) {
             case GO_TO_LAUNCH_1:
@@ -181,7 +182,7 @@ public class BlueLongNineBall extends OpMode {
                 }
                 break;
             case FIND_TAG_1:
-                if(id24 != null){
+                if(id20 != null){
                     state = State.SPIN_UP_1;
                 }
                 break;
@@ -214,10 +215,17 @@ public class BlueLongNineBall extends OpMode {
             case PREPARE_TO_INTAKE_POSE_1:
                 if(!follower.isBusy()){
                     follower.followPath(launchingToPickupReady1, false);
-                    state = State.INTAKE_1;
+                    state = State.INTAKE_1_1;
                 }
                 break;
-            case INTAKE_1:
+            case INTAKE_1_1:
+                if(!follower.isBusy()){
+                    follower.followPath(pickupReady1ToPickup1, .4, false);
+                    intake.startIntake();
+                    state = State.INTAKE_1_2;
+                }
+                break;
+            case INTAKE_1_2:
                 if(!follower.isBusy()){
                     follower.followPath(pickupReady1ToPickup1, .4, false);
                     intake.startIntake();
@@ -242,7 +250,7 @@ public class BlueLongNineBall extends OpMode {
                 }
                 break;
             case FIND_TAG_2:
-                if(id24 != null){
+                if(id20 != null){
                     state = State.SPIN_UP_2;
                 }
                 break;
@@ -298,7 +306,7 @@ public class BlueLongNineBall extends OpMode {
                 }
                 break;
             case FIND_TAG_3:
-                if(id24 != null){
+                if(id20 != null){
                     state = State.SPIN_UP_3;
                 }
                 break;
@@ -352,15 +360,15 @@ public class BlueLongNineBall extends OpMode {
     private void doAprilTag() {
         //Update the vision portal
         aprilTagWebcam.update();
-        AprilTagDetection id24 = aprilTagWebcam.getTagBySpecificId(24); // TAG ID 24 is the red goal
-        //aprilTagWebcam.displayDetectionTelemetry(id24);
+        AprilTagDetection id20 = aprilTagWebcam.getTagBySpecificId(20); // TAG ID 24 is the red goal
+        //aprilTagWebcam.displayDetectionTelemetry(id20);
         // NOTE: we will need a separate OPMODE (otherwise identical) that sets the target TAGID to BLUE (#20)
-        if (id24 != null && id24.ftcPose != null) {
+        if (id20!= null && id20.ftcPose != null) {
             numMissingTagReads = 0;
-            double angleToTag = id24.ftcPose.bearing;
+            double angleToTag = id20.ftcPose.bearing + 4;
             turret.changeTurretByDegrees(angleToTag);
 
-            double distanceToGoalCM = id24.ftcPose.range;
+            double distanceToGoalCM = id20.ftcPose.range;
             launcher.setMotorVelocityForDistance(distanceToGoalCM);
             led.setLEDGreen();
             // NOTE: use this after distance vs speed has been measured and calibrated
