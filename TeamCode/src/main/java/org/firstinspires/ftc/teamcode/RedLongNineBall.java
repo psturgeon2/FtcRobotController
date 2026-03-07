@@ -33,7 +33,7 @@ public class RedLongNineBall extends OpMode {
     private final Pose startPose = new Pose(88.8, 8, Math.toRadians(90)); // Start Pose of our robot.
     private final Pose launchingPose = new Pose(83.5, 21.5, Math.toRadians(65)); // Where our robot launches from
     private final Pose pickupReady1Pose = new Pose(100, 8, Math.toRadians(0)); // Ready to pick up middle row of balls
-    private final Pose pickup1_1Pose = new Pose(133, 8, Math.toRadians(0)); // Pick up middle row of balls
+    private final Pose pickup1_1Pose = new Pose(132, 8, Math.toRadians(0)); // Pick up middle row of balls
     private final Pose pickup1_2Pose = new Pose(120, 8, Math.toRadians(0)); // Pick up middle row of balls
     private final Pose pickupReady2Pose = new Pose(98, 37.5, Math.toRadians(0)); //Ready to pick up closest row of balls
     private final Pose pickup2Pose = new Pose(125, 37.5, Math.toRadians(0)); //Pick up middle closest of balls
@@ -379,10 +379,10 @@ public class RedLongNineBall extends OpMode {
         // NOTE: we will need a separate OPMODE (otherwise identical) that sets the target TAGID to BLUE (#20)
         if (id24 != null && id24.ftcPose != null) {
             numMissingTagReads = 0;
-            double angleToTag = id24.ftcPose.bearing + 4;
+            double angleToTag = id24.ftcPose.bearing;
             turret.changeTurretByDegrees(angleToTag);
 
-            double distanceToGoalCM = id24.ftcPose.range - 23;
+            double distanceToGoalCM = id24.ftcPose.range - 17;
             launcher.setMotorVelocityForDistance(distanceToGoalCM);
             led.setLEDGreen();
             // NOTE: use this after distance vs speed has been measured and calibrated
