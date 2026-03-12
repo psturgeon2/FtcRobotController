@@ -33,13 +33,13 @@ public class BlueCloseTwelveBall extends OpMode {
     private final Pose startPose = new Pose(19.83542039355993, 123.64937388193204, Math.toRadians(143)); // Start Pose of our robot.
     private final Pose launchingPose = new Pose(52, 92, Math.toRadians(135)); // Where our robot launches from
     private final Pose pickupReady1Pose = new Pose(48, 63, Math.toRadians(180)); // Ready to pick up closest row of balls
-    private final Pose pickup1Pose = new Pose(30, 63, Math.toRadians(180)); // Pick up closest row of balls
+    private final Pose pickup1Pose = new Pose(24, 63, Math.toRadians(180)); // Pick up closest row of balls
     private final Pose openGateReadyPose = new Pose(30, 66, Math.toRadians(90)); // Ready to open gate
     private final Pose openGatePose = new Pose(18, 66, Math.toRadians(90)); // Open gate
     private final Pose pickupReady2Pose = new Pose(48, 87, Math.toRadians(180)); //Ready to pick up middle row of balls
-    private final Pose pickup2Pose = new Pose(30, 87, Math.toRadians(180)); //Pick up middle row of balls
-    private final Pose pickupReady3 = new Pose(48, 41.5, Math.toRadians(180)); //Ready to pick up far balls
-    private final Pose pickup3Pose = new Pose(30, 41.5, Math.toRadians(180)); //Finish with 3 balls
+    private final Pose pickup2Pose = new Pose(24, 87, Math.toRadians(180)); //Pick up middle row of balls
+    private final Pose pickupReady3 = new Pose(48, 40, Math.toRadians(180)); //Ready to pick up far balls
+    private final Pose pickup3Pose = new Pose(24, 40, Math.toRadians(180)); //Finish with 3 balls
     private final Pose endPose = new Pose(30, 66, Math.toRadians(90)); //Finish ready to open gate
 
     private Path startToLaunching;

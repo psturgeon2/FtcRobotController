@@ -47,10 +47,10 @@ public class RedTeleOp  extends OpMode {
             if (id24 != null && id24.ftcPose != null) {
                 numMissingTagReads = 0;
                 double angleToTag = id24.ftcPose.bearing;
-                turret.changeTurretByDegrees(angleToTag + 4);
+                turret.changeTurretByDegrees(angleToTag + 1);
 
                 double distanceToGoalCM = id24.ftcPose.range;
-                launcher.setMotorVelocityForDistance(distanceToGoalCM - 23);
+                launcher.setMotorVelocityForDistance(distanceToGoalCM - 17);
                 // NOTE: use this after distance vs speed has been measured and calibrated
             } else if (numMissingTagReads < 100) {
                 numMissingTagReads++;
@@ -102,7 +102,7 @@ public class RedTeleOp  extends OpMode {
         //  launcher.setMotorVelocity();
 
 // Added a way for Game Controller 1 to do everything for testing
-        if (gamepad2.right_trigger_pressed || gamepad1.a) {
+        if (gamepad2.right_trigger != 0 || gamepad1.a) {
             //     if (!launcher.getTriggerActive()) {
             // TODO: maybe also check to see that launcher measured velocities are within 10%(?) of target velocity
             //         launcher.triggerFeeder();
@@ -123,7 +123,7 @@ public class RedTeleOp  extends OpMode {
         }
 
         //For Intake (test if same buttons works)
-        if (gamepad1.right_trigger_pressed || gamepad2.right_trigger_pressed) {
+        if (gamepad1.right_trigger != 0 || gamepad2.right_trigger != 0) {
             intake.startIntake();
         } else if (gamepad1.left_trigger != 0) {
             intake.reverseIntake();

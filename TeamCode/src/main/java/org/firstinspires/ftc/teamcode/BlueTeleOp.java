@@ -55,7 +55,7 @@ public class BlueTeleOp  extends OpMode {
             // NOTE: we will need a separate OPMODE (otherwise identical) that sets the target TAGID to BLUE (#20)
             if (id20 != null && id20.ftcPose != null) {
                 numMissingTagReads = 0;
-                double angleToTag = id20.ftcPose.bearing + 4;
+                double angleToTag = id20.ftcPose.bearing + 2;
                 turret.changeTurretByDegrees(angleToTag);
 
                 double distanceToGoalCM = id20.ftcPose.range - 23;
@@ -110,7 +110,7 @@ public class BlueTeleOp  extends OpMode {
         //  launcher.setMotorVelocity();
 
 // Added a way for Game Controller 1 to do everything for testing
-        if (gamepad2.right_trigger_pressed || gamepad1.a) {
+        if (gamepad2.right_trigger != 0 || gamepad1.a) {
             //     if (!launcher.getTriggerActive()) {
             // TODO: maybe also check to see that launcher measured velocities are within 10%(?) of target velocity
             //         launcher.triggerFeeder();
@@ -151,9 +151,15 @@ public class BlueTeleOp  extends OpMode {
             intake.stopIntake();
         }
 
-        // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-        // Note: pushing left stick forward gives negative value
-        drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        // slow mode
+        if(gamepad2.y){
+            drive.drive(-gamepad1.left_stick_y * 0.5, gamepad1.left_stick_x * 0.5, gamepad1.right_stick_x * 0.5);
+        } else {
+            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+            // Note: pushing left stick forward gives negative value
+            drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
+
 
         // update launcher state machine
         //launcher.updateState();

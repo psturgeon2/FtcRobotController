@@ -33,13 +33,14 @@ public class BlueLongNineBall extends OpMode {
     private final Pose startPose = new Pose(55, 8, Math.toRadians(90)); // Start Pose of our robot.
     private final Pose launchingPose = new Pose(60, 21.5, Math.toRadians(112)); // Where our robot launches from
     private final Pose pickupReady1Pose = new Pose(40, 8, Math.toRadians(180)); // Ready to pick up corner balls
-    private final Pose pickup1Pose = new Pose(10, 8, Math.toRadians(180)); // pickup corner balls
+    private final Pose pickup1_1Pose = new Pose(11, 8, Math.toRadians(180)); // pickup corner balls
+    private final Pose pickup1_2Pose = new Pose(20, 8, Math.toRadians(180)); // Pick up middle row of balls
     private final Pose pickupReady2Pose = new Pose(48, 38, Math.toRadians(180)); //Ready to pick up close balls
     private final Pose pickup2Pose = new Pose(19, 38, Math.toRadians(180)); //pickup close balls
     private final Pose endPose = new Pose(25, 66, Math.toRadians(90)); //Finish ready to open gate
 
     private Path startToLaunching;
-    private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching, launchingToPickupReady3, pickupReady3ToPickup3, pickup3ToLaunching, launchingToFinish;
+    private PathChain launchingToPickupReady1, pickupReady1ToPickup1, pickup1ToPickupReady1, pickup1ToLaunching, launchingToPickupReady2, pickupReady2ToPickup2, pickup2ToLaunching, launchingToPickupReady3, pickupReady3ToPickup3, pickup3ToLaunching, launchingToFinish;
 
     public void buildPaths() {
 
@@ -54,13 +55,18 @@ public class BlueLongNineBall extends OpMode {
                 .build();
 
         pickupReady1ToPickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(pickupReady1Pose, pickup1Pose))
-                .setLinearHeadingInterpolation(pickupReady1Pose.getHeading(), pickup1Pose.getHeading())
+                .addPath(new BezierLine(pickupReady1Pose, pickup1_1Pose))
+                .setLinearHeadingInterpolation(pickupReady1Pose.getHeading(), pickup1_1Pose.getHeading())
+                .build();
+
+        pickup1ToPickupReady1 = follower.pathBuilder()
+                .addPath(new BezierLine(pickup1_1Pose, pickup1_2Pose))
+                .setLinearHeadingInterpolation(pickup1_1Pose.getHeading(), pickup1_2Pose.getHeading())
                 .build();
 
         pickup1ToLaunching= follower.pathBuilder()
-                .addPath(new BezierLine(pickup1Pose, launchingPose))
-                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), launchingPose.getHeading())
+                .addPath(new BezierLine(pickup1_1Pose, launchingPose))
+                .setLinearHeadingInterpolation(pickup1_1Pose.getHeading(), launchingPose.getHeading())
                 .build();
 
         launchingToPickupReady2 = follower.pathBuilder()
@@ -92,7 +98,8 @@ public class BlueLongNineBall extends OpMode {
         LAUNCHING_1,
         PREPARE_TO_INTAKE_POSE_1,
         INTAKE_1_1,
-        INTAKE_1_2,
+        INTAKE1_2,
+        INTAKE1_3,
         GO_TO_LAUNCH_2,
         WAIT_TO_FINISH_PATH_2,
         FIND_TAG_2,
@@ -220,16 +227,23 @@ public class BlueLongNineBall extends OpMode {
                 break;
             case INTAKE_1_1:
                 if(!follower.isBusy()){
-                    follower.followPath(pickupReady1ToPickup1, .4, false);
+                    follower.followPath(pickupReady1ToPickup1, false);
                     intake.startIntake();
-                    state = State.INTAKE_1_2;
+                    state = BlueLongNineBall.State.INTAKE1_2;
                 }
                 break;
-            case INTAKE_1_2:
+            case INTAKE1_2:
                 if(!follower.isBusy()){
-                    follower.followPath(pickupReady1ToPickup1, .4, false);
+                    follower.followPath(pickup1ToPickupReady1,  false);
                     intake.startIntake();
-                    state = State.GO_TO_LAUNCH_2;
+                    state = BlueLongNineBall.State.INTAKE1_3;
+                }
+                break;
+            case INTAKE1_3:
+                if(!follower.isBusy()){
+                    follower.followPath(pickupReady1ToPickup1, false);
+                    intake.startIntake();
+                    state = BlueLongNineBall.State.GO_TO_LAUNCH_2;
                 }
                 break;
             case GO_TO_LAUNCH_2:
@@ -365,7 +379,7 @@ public class BlueLongNineBall extends OpMode {
         // NOTE: we will need a separate OPMODE (otherwise identical) that sets the target TAGID to BLUE (#20)
         if (id20!= null && id20.ftcPose != null) {
             numMissingTagReads = 0;
-            double angleToTag = id20.ftcPose.bearing + 4;
+            double angleToTag = id20.ftcPose.bearing + 2;
             turret.changeTurretByDegrees(angleToTag);
 
             double distanceToGoalCM = id20.ftcPose.range;
