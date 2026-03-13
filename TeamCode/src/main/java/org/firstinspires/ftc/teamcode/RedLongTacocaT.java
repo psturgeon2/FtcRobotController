@@ -395,6 +395,14 @@ public class RedLongTacocaT extends OpMode {
 
     }
 
+    @Override
+    public void stop() {
+        Pose endPose = follower.getPose();
+        blackboard.put("EndPose", endPose);
+        telemetry.addData("EndPose", endPose);
+        super.stop();
+    }
+
 
     private void doAprilTag() {
         //Update the vision portal
