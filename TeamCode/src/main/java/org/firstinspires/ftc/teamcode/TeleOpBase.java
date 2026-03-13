@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.mechanisms.AprilTagsWebcam;
@@ -8,6 +12,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.LEDIndicator;
 import org.firstinspires.ftc.teamcode.mechanisms.Launcher;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.TurretServo;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public abstract class TeleOpBase extends OpMode {
@@ -17,8 +22,12 @@ public abstract class TeleOpBase extends OpMode {
     Intake intake = new Intake();
     TurretServo turret = new TurretServo();
     LEDIndicator led = new LEDIndicator();
+    private Follower follower;
     int numMissingTagReads = 0;
+    Boolean runningAutoPath = false;
     protected abstract int getTagid();
+
+    private final Pose pose2 = new Pose(0, -36, Math.toRadians(90));
 
 
 
@@ -31,10 +40,19 @@ public abstract class TeleOpBase extends OpMode {
         turret.init(hardwareMap);
         led.init(hardwareMap);
         // turret.init(hardwareMap);
+
+        Object EndPoseValue = blackboard.get("EndPose");
+        telemetry.addData("EndPose Loaded", EndPoseValue);
+
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose((Pose)EndPoseValue);
+        follower.setMaxPower(1);
     }
 
     @Override
     public void loop() {
+
+        follower.update();
 
         double distanceToGoalCM = -1;
         double angleToTag = 0;
@@ -101,12 +119,6 @@ public abstract class TeleOpBase extends OpMode {
             launcher.resetFeeder();
         }
 
-        if (gamepad2.xWasPressed()) {
-            turret.incrementTurretPosition();
-        } else if (gamepad2.yWasPressed()) {
-            turret.decrementTurretPosition();
-        }
-
         //For Intake (test if same buttons works)
         if (gamepad1.right_trigger != 0 || gamepad2.right_trigger != 0) {
             intake.startIntake();
@@ -116,18 +128,40 @@ public abstract class TeleOpBase extends OpMode {
             intake.stopIntake();
         }
 
-        // slow mode
-        if(gamepad2.y){
-            drive.drive(-gamepad1.left_stick_y * 0.5, gamepad1.left_stick_x * 0.5, gamepad1.right_stick_x * 0.5);
-        } else {
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            // Note: pushing left stick forward gives negative value
-            drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        if(!runningAutoPath) {
+            // slow mode
+            if (gamepad2.y) {
+                drive.drive(-gamepad1.left_stick_y * 0.5, gamepad1.left_stick_x * 0.5, gamepad1.right_stick_x * 0.5);
+            } else {
+                // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+                // Note: pushing left stick forward gives negative value
+                drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            }
+        }
+
+        if(gamepad1.yWasPressed()){
+            runningAutoPath = true;
+            //Heading is in radians
+            Pose Current = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+            PathChain TestPath = follower.pathBuilder()
+                    .addPath(new BezierLine(Current, pose2))
+                    .setLinearHeadingInterpolation(Current.getHeading(), pose2.getHeading())
+                    .build();
+            follower.followPath(TestPath);
+        }
+        if((runningAutoPath && !follower.isBusy()) || gamepad1.leftBumperWasPressed()){
+            follower.breakFollowing();
+            runningAutoPath = false;
         }
 
 
         launcher.setMotorVelocity();
 
+        String robotX = String.format("%.2f", follower.getPose().getX());
+        String robotY = String.format("%.2f", follower.getPose().getY());
+        String robotHeading = String.format("%.2f", follower.getPose().getHeading());
+        telemetry.addLine("Robot X,Y: " + robotX + ", " + robotY);
+        telemetry.addLine("Robot X,Y: " + robotHeading);
         telemetry.addLine("Distance/angle to goal: " + distanceToGoalCM + "/" + angleToTag);
         telemetry.addLine("Missed Tag Reads: " + numMissingTagReads);
         telemetry.addLine("Target Velocity: " + launcher.getTargetLaunchSpeed());

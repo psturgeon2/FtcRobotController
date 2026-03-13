@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.TurretServo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-@Disabled
+
 @Autonomous
 public class SquareAuto extends OpMode {
     MecanumDrive drive = new MecanumDrive();
@@ -102,7 +102,7 @@ public class SquareAuto extends OpMode {
             case PATH2:
                 if (!follower.isBusy()) {
                     follower.followPath(path2);
-                    state = State.PATH3;
+                    state = State.FINISHED;
                     break;
                 }
 
@@ -127,5 +127,13 @@ public class SquareAuto extends OpMode {
                 break;
 
         }
+    }
+
+    @Override
+    public void stop() {
+        Pose endPose = follower.getPose();
+        blackboard.put("EndPose", endPose);
+        telemetry.addData("EndPose", endPose);
+        super.stop();
     }
 }
