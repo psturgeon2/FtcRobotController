@@ -30,6 +30,7 @@ public abstract class TeleOpBase extends OpMode {
     private final Pose pose2 = new Pose(0, -36, Math.toRadians(90));
 
 
+    private Boolean followerInitialized = false;
 
     @Override
     public void init() {
@@ -41,12 +42,22 @@ public abstract class TeleOpBase extends OpMode {
         led.init(hardwareMap);
         // turret.init(hardwareMap);
 
-        Object EndPoseValue = blackboard.get("EndPose");
-        telemetry.addData("EndPose Loaded", EndPoseValue);
-
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose((Pose)EndPoseValue);
         follower.setMaxPower(1);
+        if(blackboard.containsKey("EndPose")) {
+            Object EndPoseValue = blackboard.get("EndPose");
+            telemetry.addData("EndPose Loaded", EndPoseValue);
+            follower.setStartingPose((Pose) EndPoseValue);
+            followerInitialized = true;
+        }
+    }
+
+    @Override
+    public void start() {
+        //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
+        //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
+        //If you don't pass anything in, it uses the default (false)
+        follower.startTeleopDrive();
     }
 
     @Override
@@ -128,14 +139,18 @@ public abstract class TeleOpBase extends OpMode {
             intake.stopIntake();
         }
 
+        double speedMultiplier = 1;
+        if(gamepad2.y){
+            speedMultiplier = .5;
+        }
         if(!runningAutoPath) {
-            // slow mode
-            if (gamepad2.y) {
-                drive.drive(-gamepad1.left_stick_y * 0.5, gamepad1.left_stick_x * 0.5, gamepad1.right_stick_x * 0.5);
-            } else {
                 // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
                 // Note: pushing left stick forward gives negative value
-                drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+                //drive.drive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
+            if(followerInitialized) {
+                follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
+            } else{
+                drive.drive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
             }
         }
 
@@ -172,5 +187,13 @@ public abstract class TeleOpBase extends OpMode {
         telemetry.addLine("Turret Position: " + turretPositionStr);
 
 
+    }
+
+    @Override
+    public void stop() {
+        Pose endPose = follower.getPose();
+        blackboard.put("EndPose", endPose);
+        telemetry.addData("EndPose", endPose);
+        super.stop();
     }
 }
