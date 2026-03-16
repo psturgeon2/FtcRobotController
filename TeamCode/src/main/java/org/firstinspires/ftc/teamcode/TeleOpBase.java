@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.mechanisms.AprilTagsWebcam;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.LEDIndicator;
@@ -145,6 +146,7 @@ public abstract class TeleOpBase extends OpMode {
         if(gamepad2.y){
             speedMultiplier = .5;
         }
+
         if(!runningAutoPath) {
                 // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
                 // Note: pushing left stick forward gives negative value
@@ -180,6 +182,7 @@ public abstract class TeleOpBase extends OpMode {
         if((runningAutoPath && !follower.isBusy()) || gamepad1.leftBumperWasPressed()){
             follower.breakFollowing();
             runningAutoPath = false;
+            telemetry.addLine("Path Broken");
         }
 
 
