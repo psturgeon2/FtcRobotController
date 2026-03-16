@@ -150,9 +150,9 @@ public abstract class TeleOpBase extends OpMode {
                 // Note: pushing left stick forward gives negative value
                 //drive.drive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
             if(followerInitialized) {
-                follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier, false);
+                follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier, -gamepad1.left_stick_x * speedMultiplier, -gamepad1.right_stick_x * speedMultiplier, false);
             } else{
-                drive.drive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
+                drive.drive(-gamepad1.left_stick_y * speedMultiplier, -gamepad1.left_stick_x * speedMultiplier, -gamepad1.right_stick_x * speedMultiplier);
             }
         }
 
@@ -195,6 +195,21 @@ public abstract class TeleOpBase extends OpMode {
         }
         else {
             telemetry.addLine("Robot Centric");
+        }
+        if (follower.isBusy()){
+            telemetry.addLine("Follower is Busy");
+        } else {
+            telemetry.addLine("Follower is not Busy");
+        }
+        if (runningAutoPath){
+            telemetry.addLine("running auto path");
+        } else {
+            telemetry.addLine("not running auto path");
+        }
+        if (gamepad1.left_bumper){
+            telemetry.addLine("left bumper pressed");
+        } else {
+            telemetry.addLine("left bumper not pressed");
         }
         telemetry.addLine("Distance/angle to goal: " + distanceToGoalCM + "/" + angleToTag);
         telemetry.addLine("Missed Tag Reads: " + numMissingTagReads);
