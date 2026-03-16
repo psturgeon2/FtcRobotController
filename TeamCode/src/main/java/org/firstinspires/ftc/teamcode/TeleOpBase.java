@@ -26,6 +26,8 @@ public abstract class TeleOpBase extends OpMode {
     int numMissingTagReads = 0;
     Boolean runningAutoPath = false;
     protected abstract int getTagid();
+    protected abstract Pose getGatePose();
+    protected abstract Pose getParkPose();
 
     private final Pose pose2 = new Pose(0, -36, Math.toRadians(90));
 
@@ -57,7 +59,7 @@ public abstract class TeleOpBase extends OpMode {
         //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
         //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
         //If you don't pass anything in, it uses the default (false)
-        follower.startTeleopDrive();
+        follower.startTeleopDrive(true);
     }
 
     @Override
@@ -148,7 +150,7 @@ public abstract class TeleOpBase extends OpMode {
                 // Note: pushing left stick forward gives negative value
                 //drive.drive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
             if(followerInitialized) {
-                follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
+                follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier, false);
             } else{
                 drive.drive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
             }
@@ -158,11 +160,22 @@ public abstract class TeleOpBase extends OpMode {
             runningAutoPath = true;
             //Heading is in radians
             Pose Current = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
-            PathChain TestPath = follower.pathBuilder()
-                    .addPath(new BezierLine(Current, pose2))
-                    .setLinearHeadingInterpolation(Current.getHeading(), pose2.getHeading())
+            Pose gatePose = getGatePose();
+            PathChain GatePath = follower.pathBuilder()
+                    .addPath(new BezierLine(Current, gatePose))
+                    .setLinearHeadingInterpolation(Current.getHeading(), gatePose.getHeading())
                     .build();
-            follower.followPath(TestPath);
+            follower.followPath(GatePath);
+        } else if(gamepad1.bWasPressed()) {
+            runningAutoPath = true;
+            //Heading is in radians
+            Pose Current = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+            Pose parkPose = getParkPose();
+            PathChain ParkPath = follower.pathBuilder()
+                    .addPath(new BezierLine(Current, parkPose))
+                    .setLinearHeadingInterpolation(Current.getHeading(), parkPose.getHeading())
+                    .build();
+            follower.followPath(ParkPath);
         }
         if((runningAutoPath && !follower.isBusy()) || gamepad1.leftBumperWasPressed()){
             follower.breakFollowing();
@@ -177,6 +190,12 @@ public abstract class TeleOpBase extends OpMode {
         String robotHeading = String.format("%.2f", follower.getPose().getHeading());
         telemetry.addLine("Robot X,Y: " + robotX + ", " + robotY);
         telemetry.addLine("Robot X,Y: " + robotHeading);
+        if(followerInitialized){
+            telemetry.addLine("Field Centric");
+        }
+        else {
+            telemetry.addLine("Robot Centric");
+        }
         telemetry.addLine("Distance/angle to goal: " + distanceToGoalCM + "/" + angleToTag);
         telemetry.addLine("Missed Tag Reads: " + numMissingTagReads);
         telemetry.addLine("Target Velocity: " + launcher.getTargetLaunchSpeed());

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -18,5 +19,15 @@ public class BlueTeleOp  extends TeleOpBase {
     @Override
     protected int getTagid() {
         return 20;
+    }
+
+    @Override
+    protected Pose getGatePose() {
+        return null;
+    }
+
+    @Override
+    protected Pose getParkPose() {
+        return null;
     }
 }
