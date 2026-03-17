@@ -23,11 +23,16 @@ public class BlueTeleOp  extends TeleOpBase {
 
     @Override
     protected Pose getGatePose() {
-        return null;
+        return new Pose(18, 66, Math.toRadians(90)); // Open gate
     }
 
     @Override
     protected Pose getParkPose() {
-        return null;
+        return new Pose(105.3, 33.4, Math.toRadians(90)); // Park
+    }
+
+    @Override
+    protected int getDriverDirection() {
+        return -1;
     }
 }

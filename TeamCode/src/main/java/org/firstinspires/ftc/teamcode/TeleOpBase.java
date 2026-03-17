@@ -30,6 +30,10 @@ public abstract class TeleOpBase extends OpMode {
     protected abstract Pose getGatePose();
     protected abstract Pose getParkPose();
 
+    protected abstract int getDriverDirection();
+
+
+
     private final Pose pose2 = new Pose(0, -36, Math.toRadians(90));
 
 
@@ -152,9 +156,11 @@ public abstract class TeleOpBase extends OpMode {
                 // Note: pushing left stick forward gives negative value
                 //drive.drive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
             if(followerInitialized) {
-                follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier, -gamepad1.left_stick_x * speedMultiplier, -gamepad1.right_stick_x * speedMultiplier, false);
+                // leftY * getMultiplier()
+                int redVsBlueDirection = getDriverDirection();
+                follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier * redVsBlueDirection, -gamepad1.left_stick_x * speedMultiplier * redVsBlueDirection, -gamepad1.right_stick_x * speedMultiplier, false);
                 telemetry.addLine("FC Right Stick X,Y" + gamepad1.left_stick_x + ", " + gamepad1.left_stick_y);
-                telemetry.addLine("FC Left Stick X" + gamepad1.right_stick_y);
+                telemetry.addLine("FC Left Stick X" + gamepad1.right_stick_x);
             } else{
                 drive.drive(-gamepad1.left_stick_y * speedMultiplier, -gamepad1.left_stick_x * speedMultiplier, -gamepad1.right_stick_x * speedMultiplier);
                 telemetry.addLine("RC Right Stick X,Y" + gamepad1.left_stick_x + ", " + gamepad1.left_stick_y);
@@ -172,6 +178,7 @@ public abstract class TeleOpBase extends OpMode {
                     .setLinearHeadingInterpolation(Current.getHeading(), gatePose.getHeading())
                     .build();
             follower.followPath(GatePath);
+            telemetry.addLine("Y was pressed: " + yPressed++);
         } else if(gamepad1.bWasPressed()) {
             runningAutoPath = true;
             //Heading is in radians
@@ -182,9 +189,11 @@ public abstract class TeleOpBase extends OpMode {
                     .setLinearHeadingInterpolation(Current.getHeading(), parkPose.getHeading())
                     .build();
             follower.followPath(ParkPath);
+            telemetry.addLine("B was pressed: " + bPressed++);
         }
         if((runningAutoPath && !follower.isBusy()) || gamepad1.leftBumperWasPressed()){
             follower.breakFollowing();
+            follower.startTeleOpDrive(true);
             runningAutoPath = false;
             telemetry.addLine("Path Broken");
         }

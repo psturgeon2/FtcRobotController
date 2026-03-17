@@ -32,4 +32,9 @@ public class RedTeleOp  extends TeleOpBase {
     protected Pose getParkPose() {
         return parkPose;
     }
+
+    @Override
+    protected int getDriverDirection() {
+        return 1;
+    }
 }
