@@ -26,6 +26,9 @@ public abstract class TeleOpBase extends OpMode {
     private Follower follower;
     int numMissingTagReads = 0;
     Boolean runningAutoPath = false;
+
+    private boolean isRobotCentric = true;
+
     protected abstract int getTagid();
     protected abstract Pose getGatePose();
     protected abstract Pose getParkPose();
@@ -127,21 +130,21 @@ public abstract class TeleOpBase extends OpMode {
             //This skips the april tag reading and math
         }
 
-
-// Added a way for Game Controller 1 to do everything for testing
+        // launch feeder
         if (gamepad2.right_trigger != 0 || gamepad1.a) {
             launcher.loadBall();
-        } else if (gamepad2.x || gamepad1.x) {
+        } else if (gamepad2.x) {
             launcher.unloadBall();
         } else {
             launcher.resetFeeder();
         }
 
-        //For Intake (test if same buttons works)
+        //For Intake
         if (gamepad1.right_trigger != 0 || gamepad2.right_trigger != 0) {
             intake.startIntake();
         } else if (gamepad1.left_trigger != 0) {
             intake.reverseIntake();
+            launcher.unloadBall();
         } else {
             intake.stopIntake();
         }
@@ -151,17 +154,26 @@ public abstract class TeleOpBase extends OpMode {
             speedMultiplier = .5;
         }
 
+
+        if(gamepad1.dpadDownWasPressed() && followerInitialized) {
+            // followerInitialized must be true in order to run field centric
+            isRobotCentric = false; //field centric
+        }
+        if(gamepad1.dpadUpWasPressed()) {
+            // can always run robot centric
+            isRobotCentric = true;
+        }
         if(!runningAutoPath) {
                 // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
                 // Note: pushing left stick forward gives negative value
                 //drive.drive(-gamepad1.left_stick_y * speedMultiplier, gamepad1.left_stick_x * speedMultiplier, gamepad1.right_stick_x * speedMultiplier);
-            if(followerInitialized) {
+            if(!isRobotCentric) {
                 // leftY * getMultiplier()
                 int redVsBlueDirection = getDriverDirection();
                 follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier * redVsBlueDirection, -gamepad1.left_stick_x * speedMultiplier * redVsBlueDirection, -gamepad1.right_stick_x * speedMultiplier, false);
                 telemetry.addLine("FC Right Stick X,Y" + gamepad1.left_stick_x + ", " + gamepad1.left_stick_y);
                 telemetry.addLine("FC Left Stick X" + gamepad1.right_stick_x);
-            } else{
+            } else {
                 drive.drive(-gamepad1.left_stick_y * speedMultiplier, -gamepad1.left_stick_x * speedMultiplier, -gamepad1.right_stick_x * speedMultiplier);
                 telemetry.addLine("RC Right Stick X,Y" + gamepad1.left_stick_x + ", " + gamepad1.left_stick_y);
                 telemetry.addLine("RC Left Stick X" + gamepad1.right_stick_y);
@@ -178,7 +190,6 @@ public abstract class TeleOpBase extends OpMode {
                     .setLinearHeadingInterpolation(Current.getHeading(), gatePose.getHeading())
                     .build();
             follower.followPath(GatePath);
-            telemetry.addLine("Y was pressed: " + yPressed++);
         } else if(gamepad1.bWasPressed()) {
             runningAutoPath = true;
             //Heading is in radians
@@ -189,7 +200,6 @@ public abstract class TeleOpBase extends OpMode {
                     .setLinearHeadingInterpolation(Current.getHeading(), parkPose.getHeading())
                     .build();
             follower.followPath(ParkPath);
-            telemetry.addLine("B was pressed: " + bPressed++);
         }
         if((runningAutoPath && !follower.isBusy()) || gamepad1.leftBumperWasPressed()){
             follower.breakFollowing();
@@ -199,6 +209,7 @@ public abstract class TeleOpBase extends OpMode {
         }
 
 
+
         launcher.setMotorVelocity();
 
         String robotX = String.format("%.2f", follower.getPose().getX());
@@ -206,7 +217,7 @@ public abstract class TeleOpBase extends OpMode {
         String robotHeading = String.format("%.2f", follower.getPose().getHeading());
         telemetry.addLine("Robot X,Y: " + robotX + ", " + robotY);
         telemetry.addLine("Robot X,Y: " + robotHeading);
-        if(followerInitialized){
+        if(!isRobotCentric){
             telemetry.addLine("Field Centric");
         }
         else {
