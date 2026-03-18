@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.TurretServo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-
+@Disabled
 @Autonomous
 public class SquareAuto extends OpMode {
     MecanumDrive drive = new MecanumDrive();
