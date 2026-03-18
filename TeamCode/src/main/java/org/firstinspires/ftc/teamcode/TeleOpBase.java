@@ -180,7 +180,7 @@ public abstract class TeleOpBase extends OpMode {
             }
         }
 
-        if(gamepad1.yWasPressed()){
+        if(gamepad1.dpadLeftWasPressed()){
             runningAutoPath = true;
             //Heading is in radians
             Pose Current = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
@@ -190,7 +190,7 @@ public abstract class TeleOpBase extends OpMode {
                     .setLinearHeadingInterpolation(Current.getHeading(), gatePose.getHeading())
                     .build();
             follower.followPath(GatePath);
-        } else if(gamepad1.bWasPressed()) {
+        } else if(gamepad1.dpadRightWasPressed()) {
             runningAutoPath = true;
             //Heading is in radians
             Pose Current = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
