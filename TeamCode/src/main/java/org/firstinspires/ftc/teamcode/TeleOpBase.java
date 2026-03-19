@@ -174,7 +174,8 @@ public abstract class TeleOpBase extends OpMode {
                 telemetry.addLine("FC Right Stick X,Y" + gamepad1.left_stick_x + ", " + gamepad1.left_stick_y);
                 telemetry.addLine("FC Left Stick X" + gamepad1.right_stick_x);
             } else {
-                drive.drive(-gamepad1.left_stick_y * speedMultiplier, -gamepad1.left_stick_x * speedMultiplier, -gamepad1.right_stick_x * speedMultiplier);
+                //drive.drive(-gamepad1.left_stick_y * speedMultiplier, -gamepad1.left_stick_x * speedMultiplier, -gamepad1.right_stick_x * speedMultiplier);
+                follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier, -gamepad1.left_stick_x * speedMultiplier, -gamepad1.right_stick_x * speedMultiplier, true);
                 telemetry.addLine("RC Right Stick X,Y" + gamepad1.left_stick_x + ", " + gamepad1.left_stick_y);
                 telemetry.addLine("RC Left Stick X" + gamepad1.right_stick_y);
             }
