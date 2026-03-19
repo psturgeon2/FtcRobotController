@@ -59,6 +59,7 @@ public abstract class TeleOpBase extends OpMode {
             telemetry.addData("EndPose Loaded", EndPoseValue);
             follower.setStartingPose((Pose) EndPoseValue);
             followerInitialized = true;
+            isRobotCentric = false;
         }
     }
 
