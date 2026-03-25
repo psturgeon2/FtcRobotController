@@ -35,8 +35,8 @@ public class RedLongNineBall extends OpMode {
     private final Pose pickupReady1Pose = new Pose(100, 8, Math.toRadians(0)); // Ready to pick up middle row of balls
     private final Pose pickup1_1Pose = new Pose(132, 8, Math.toRadians(0)); // Pick up middle row of balls
     private final Pose pickup1_2Pose = new Pose(120, 8, Math.toRadians(0)); // Pick up middle row of balls
-    private final Pose pickupReady2Pose = new Pose(98, 37.5, Math.toRadians(0)); //Ready to pick up closest row of balls
-    private final Pose pickup2Pose = new Pose(125, 37.5, Math.toRadians(0)); //Pick up middle closest of balls
+    private final Pose pickupReady2Pose = new Pose(98, 36, Math.toRadians(0)); //Ready to pick up closest row of balls
+    private final Pose pickup2Pose = new Pose(126.5, 36, Math.toRadians(0)); //Pick up middle closest of balls
     private final Pose endPose = new Pose(122, 66, Math.toRadians(90)); //Finish ready to open gate
 
     private Path startToLaunching;
